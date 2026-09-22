@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="css/pi.css" />
+</head>
+<body style="visibility: hidden;">
+  <div class="sdpi-wrapper">
+    <div class="sdpi-item">
+      <label class="sdpi-item-label" data-i18n="Monitors">Monitors</label>
+      <div id="monitorPicker" class="sdpi-item-value muted" data-i18n="Loading">Loading…</div>
+    </div>
+    <div class="sdpi-item">
+      <label class="sdpi-item-label" data-i18n="RefreshRate">Refresh Rate</label>
+      <select id="refreshRates" class="sdpi-item-value"></select>
+    </div>
+  </div>
+  <script src="js/pi-common.js"></script>
+  <script>initMonitorPicker({ mode: "single", settingKey: "monitorId" });</script>
+</body>
+</html>

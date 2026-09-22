@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="css/pi.css" />
+</head>
+<body style="visibility: hidden;">
+  <div class="sdpi-wrapper">
+    <div class="sdpi-item">
+      <label class="sdpi-item-label" data-i18n="Monitors">Monitors</label>
+      <div id="monitorPicker" class="sdpi-item-value muted" data-i18n="Loading">Loading…</div>
+    </div>
+    <div class="sdpi-item">
+      <label class="sdpi-item-label" data-i18n="Mode">Mode</label>
+      <select class="sdpi-item-value" data-setting="mode" data-default="direct">
+        <option value="direct" data-i18n="Direct">Direct</option>
+        <option value="toggle" data-i18n="Toggle">Toggle</option>
+      </select>
+    </div>
+    <div class="sdpi-item" data-visible-when="mode=direct">
+      <label class="sdpi-item-label" data-i18n="Port">Port</label>
+      <select class="sdpi-item-value port-select" data-setting="port" data-default="15">
+        <option value="15">DisplayPort 1</option>
+        <option value="16">DisplayPort 2</option>
+        <option value="17">HDMI 1</option>
+        <option value="18">HDMI 2</option>
+        <option value="27">USB-C / Type-C</option>
+        <option value="1">VGA</option>
+        <option value="3">DVI 1</option>
+      </select>
+    </div>
+    <div class="sdpi-item" data-visible-when="mode=toggle">
+      <label class="sdpi-item-label" data-i18n="PortA">Port A</label>
+      <select class="sdpi-item-value port-select" data-setting="portA" data-default="15">
+        <option value="15">DisplayPort 1</option>
+        <option value="16">DisplayPort 2</option>
+        <option value="17">HDMI 1</option>
+        <option value="18">HDMI 2</option>
+        <option value="27">USB-C / Type-C</option>
+        <option value="1">VGA</option>
+        <option value="3">DVI 1</option>
+      </select>
+    </div>
+    <div class="sdpi-item" data-visible-when="mode=toggle">
+      <label class="sdpi-item-label" data-i18n="PortB">Port B</label>
+      <select class="sdpi-item-value port-select" data-setting="portB" data-default="17">
+        <option value="15">DisplayPort 1</option>
+        <option value="16">DisplayPort 2</option>
+        <option value="17">HDMI 1</option>
+        <option value="18">HDMI 2</option>
+        <option value="27">USB-C / Type-C</option>
+        <option value="1">VGA</option>
+        <option value="3">DVI 1</option>
+      </select>
+    </div>
+  </div>
+  <script src="js/pi-common.js"></script>
+  <script>initMonitorPicker({ mode: "single", settingKey: "monitorId" });</script>
+</body>
+</html>

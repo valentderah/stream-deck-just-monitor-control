@@ -1,0 +1,7 @@
+﻿bin/
+dist/
+com.valentderah.just-monitor-control.sdPlugin/
+*.exe
+*.streamDeckPlugin
+.superpowers/
+docs/

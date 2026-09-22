@@ -1,0 +1,79 @@
+{
+  "Name": "Just Monitor Control",
+  "Version": "0.8.1.0",
+  "Author": "Valiantsin Dzerakh",
+  "Actions": [
+    {
+      "Name": "Brightness",
+      "UUID": "com.valentderah.just-monitor-control.brightness",
+      "Icon": "imgs/actions/brightness",
+      "Tooltip": "Set, step, or toggle monitor brightness.",
+      "PropertyInspectorPath": "ui/brightness.html",
+      "Controllers": ["Keypad"],
+      "States": [{ "Image": "imgs/actions/brightness", "TitleAlignment": "bottom" }]
+    },
+    {
+      "Name": "Input Switch",
+      "UUID": "com.valentderah.just-monitor-control.input-switch",
+      "Icon": "imgs/actions/input",
+      "Tooltip": "Switch monitor input port.",
+      "PropertyInspectorPath": "ui/input-switch.html",
+      "Controllers": ["Keypad"],
+      "States": [
+        { "Image": "imgs/actions/input", "TitleAlignment": "bottom" },
+        { "Image": "imgs/actions/input", "TitleAlignment": "bottom" }
+      ]
+    },
+    {
+      "Name": "Refresh Rate",
+      "UUID": "com.valentderah.just-monitor-control.refresh-rate",
+      "Icon": "imgs/actions/refresh",
+      "Tooltip": "Change display refresh rate.",
+      "PropertyInspectorPath": "ui/refresh-rate.html",
+      "Controllers": ["Keypad"],
+      "States": [{ "Image": "imgs/actions/refresh", "TitleAlignment": "bottom" }]
+    },
+    {
+      "Name": "HDR",
+      "UUID": "com.valentderah.just-monitor-control.hdr",
+      "Icon": "imgs/actions/hdr",
+      "Tooltip": "Toggle HDR on selected monitors.",
+      "PropertyInspectorPath": "ui/hdr.html",
+      "Controllers": ["Keypad"],
+      "States": [
+        { "Image": "imgs/actions/hdr", "TitleAlignment": "bottom" },
+        { "Image": "imgs/actions/hdr", "TitleAlignment": "bottom" }
+      ]
+    },
+    {
+      "Name": "Sleep",
+      "UUID": "com.valentderah.just-monitor-control.sleep",
+      "Icon": "imgs/actions/sleep",
+      "Tooltip": "Sleep or wake monitors.",
+      "PropertyInspectorPath": "ui/sleep.html",
+      "Controllers": ["Keypad"],
+      "States": [
+        { "Image": "imgs/actions/sleep", "TitleAlignment": "bottom" },
+        { "Image": "imgs/actions/sleep", "TitleAlignment": "bottom" }
+      ]
+    },
+    {
+      "Name": "Raw VCP",
+      "UUID": "com.valentderah.just-monitor-control.raw-vcp",
+      "Icon": "imgs/actions/vcp",
+      "Tooltip": "Send a raw DDC/CI VCP code.",
+      "PropertyInspectorPath": "ui/raw-vcp.html",
+      "Controllers": ["Keypad"],
+      "States": [{ "Image": "imgs/actions/vcp", "TitleAlignment": "bottom" }]
+    }
+  ],
+  "Category": "Just Monitor Control",
+  "CategoryIcon": "imgs/plugin/category-icon",
+  "CodePath": "bin/plugin.exe",
+  "Description": "Control monitor brightness, input, refresh rate, HDR, sleep, and raw VCP from Stream Deck.",
+  "Icon": "imgs/plugin/marketplace",
+  "SDKVersion": 3,
+  "Software": { "MinimumVersion": "6.9" },
+  "OS": [{ "Platform": "windows", "MinimumVersion": "10" }],
+  "UUID": "com.valentderah.just-monitor-control"
+}

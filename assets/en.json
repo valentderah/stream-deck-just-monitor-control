@@ -1,0 +1,53 @@
+{
+  "Name": "Just Monitor Control",
+  "Description": "Control monitor brightness, input, refresh rate, HDR, sleep, and raw VCP from Stream Deck.",
+  "Category": "Just Monitor Control",
+  "com.valentderah.just-monitor-control.brightness": {
+    "Name": "Brightness",
+    "Tooltip": "Set, step, or toggle monitor brightness."
+  },
+  "com.valentderah.just-monitor-control.input-switch": {
+    "Name": "Input Switch",
+    "Tooltip": "Switch monitor input port."
+  },
+  "com.valentderah.just-monitor-control.refresh-rate": {
+    "Name": "Refresh Rate",
+    "Tooltip": "Change display refresh rate."
+  },
+  "com.valentderah.just-monitor-control.hdr": {
+    "Name": "HDR",
+    "Tooltip": "Toggle HDR on selected monitors."
+  },
+  "com.valentderah.just-monitor-control.sleep": {
+    "Name": "Sleep",
+    "Tooltip": "Sleep or wake monitors."
+  },
+  "com.valentderah.just-monitor-control.raw-vcp": {
+    "Name": "Raw VCP",
+    "Tooltip": "Send a raw DDC/CI VCP code."
+  },
+  "Localization": {
+    "Monitors": "Monitors",
+    "Mode": "Mode",
+    "Loading": "Loading…",
+    "Set": "Set",
+    "Step": "Step",
+    "Toggle": "Toggle",
+    "Value": "Value",
+    "StepAmount": "Step",
+    "ToggleA": "Level A",
+    "ToggleB": "Level B",
+    "Direct": "Direct",
+    "Port": "Port",
+    "PortA": "Port A",
+    "PortB": "Port B",
+    "RefreshRate": "Refresh Rate",
+    "VCPCode": "VCP Code",
+    "VCPValue": "Value",
+    "Sleep": "Sleep",
+    "Wake": "Wake",
+    "Primary": "Primary",
+    "Identify": "Identify",
+    "OpenWindowsSettings": "Windows Display Settings…"
+  }
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="css/pi.css" />
+</head>
+<body style="visibility: hidden;">
+  <div class="sdpi-wrapper">
+    <div class="sdpi-item">
+      <label class="sdpi-item-label" data-i18n="Monitors">Monitors</label>
+      <div id="monitorPicker" class="sdpi-item-value muted" data-i18n="Loading">Loading…</div>
+    </div>
+    <div class="sdpi-item">
+      <label class="sdpi-item-label" data-i18n="Mode">Mode</label>
+      <select class="sdpi-item-value" data-setting="mode" data-default="sleep">
+        <option value="sleep" data-i18n="Sleep">Sleep</option>
+        <option value="wake" data-i18n="Wake">Wake</option>
+        <option value="toggle" data-i18n="Toggle">Toggle</option>
+      </select>
+    </div>
+  </div>
+  <script src="js/pi-common.js"></script>
+  <script>initMonitorPicker({ mode: "multi", settingKey: "monitorIds" });</script>
+</body>
+</html>
