@@ -117,24 +117,12 @@
   function setPickerLoading() {
     var host = document.getElementById("monitorPicker");
     if (!host) return;
+    host.classList.add("muted");
     host.innerHTML = "";
     var span = document.createElement("span");
-    span.className = "muted";
     span.setAttribute("data-i18n", "Loading");
     span.textContent = (translations.Loading) || "Loading…";
     host.appendChild(span);
-  }
-
-  function syncPickerFromSettings() {
-    if (pickerMode === "multi") {
-      var ids = settings.monitorIds || [];
-      document.querySelectorAll("#monitorPicker input[type=checkbox]").forEach(function (cb) {
-        cb.checked = ids.indexOf(cb.value) !== -1;
-      });
-    } else {
-      var sel = document.querySelector("#monitorPicker select");
-      if (sel && settings.monitorId) sel.value = settings.monitorId;
-    }
   }
 
   function formatMonitorLabel(m) {
@@ -151,17 +139,40 @@
     sendToPlugin({ type: "identify" });
   };
 
-  window.openDisplaySettings = function () {
-    if (!websocket || websocket.readyState !== WebSocket.OPEN) return;
-    websocket.send(JSON.stringify({
-      event: "openUrl",
-      payload: { url: "ms-settings:display" }
-    }));
-  };
+  function updateMultiSelectTrigger(box, monitors) {
+    var trigger = box.querySelector(".multiselect-trigger");
+    if (!trigger) return;
+    var ids = settings.monitorIds || [];
+    if (ids.length === 0) {
+      trigger.textContent = "—";
+      return;
+    }
+    var labels = [];
+    monitors.forEach(function (m) {
+      if (ids.indexOf(m.id) !== -1) {
+        labels.push(formatMonitorLabel(m));
+      }
+    });
+    trigger.textContent = labels.length > 0 ? labels.join(", ") : "—";
+    trigger.title = trigger.textContent;
+  }
+
+  function syncPickerFromSettings() {
+    if (pickerMode === "multi") {
+      var ids = settings.monitorIds || [];
+      document.querySelectorAll("#monitorPicker input[type=checkbox]").forEach(function (cb) {
+        cb.checked = ids.indexOf(cb.value) !== -1;
+      });
+    } else {
+      var sel = document.querySelector("#monitorPicker select");
+      if (sel && settings.monitorId) sel.value = settings.monitorId;
+    }
+  }
 
   function fillMonitors(monitors) {
     var host = document.getElementById("monitorPicker");
     if (!host) return;
+    host.classList.remove("muted");
     host.innerHTML = "";
     if (!monitors || !monitors.length) {
       host.textContent = "—";
@@ -169,34 +180,63 @@
     }
 
     if (pickerMode === "multi") {
-      var box = document.createElement("div");
-      box.className = "monitor-multi";
-
       if (!settings.monitorIds || settings.monitorIds.length === 0) {
         settings.monitorIds = monitors.map(function (m) { return m.id; });
         sendSettings();
       }
 
+      var box = document.createElement("div");
+      box.className = "multiselect-box";
+
+      var trigger = document.createElement("div");
+      trigger.className = "multiselect-trigger";
+      box.appendChild(trigger);
+
+      var dropdown = document.createElement("div");
+      dropdown.className = "multiselect-dropdown";
+
       monitors.forEach(function (m) {
-        var lab = document.createElement("label");
+        var opt = document.createElement("label");
+        opt.className = "multiselect-option";
+
         var cb = document.createElement("input");
         cb.type = "checkbox";
         cb.value = m.id;
         cb.checked = (settings.monitorIds || []).indexOf(m.id) !== -1;
+
         cb.addEventListener("change", function () {
           var ids = [];
-          box.querySelectorAll("input:checked").forEach(function (c) { ids.push(c.value); });
+          dropdown.querySelectorAll("input:checked").forEach(function (c) { ids.push(c.value); });
           settings.monitorIds = ids;
+          updateMultiSelectTrigger(box, monitors);
           sendSettings();
         });
-        lab.appendChild(cb);
-        lab.appendChild(document.createTextNode(formatMonitorLabel(m)));
-        box.appendChild(lab);
+
+        var span = document.createElement("span");
+        span.textContent = formatMonitorLabel(m);
+
+        opt.appendChild(cb);
+        opt.appendChild(span);
+        dropdown.appendChild(opt);
       });
+
+      box.appendChild(dropdown);
+
+      trigger.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var wasOpen = box.classList.contains("open");
+        document.querySelectorAll(".multiselect-box.open").forEach(function (b) { b.classList.remove("open"); });
+        if (!wasOpen) box.classList.add("open");
+      });
+
+      dropdown.addEventListener("click", function (e) {
+        e.stopPropagation();
+      });
+
       host.appendChild(box);
+      updateMultiSelectTrigger(box, monitors);
     } else {
       var sel = document.createElement("select");
-      sel.className = "sdpi-item-value";
       monitors.forEach(function (m) {
         var opt = document.createElement("option");
         opt.value = m.id;
@@ -221,6 +261,7 @@
       requestRefreshRates();
     }
 
+    // Добавляем строчку с кнопкой Identify (без Windows Display Settings)
     var parentItem = host.closest(".sdpi-item");
     if (parentItem && !document.getElementById("monitorActionRow")) {
       var row = document.createElement("div");
@@ -230,12 +271,17 @@
         '<div class="sdpi-item-label"></div>' +
         '<div class="sdpi-item-value monitor-actions">' +
           '<a href="javascript:void(0)" class="link-btn" onclick="identifyMonitors()">' + (translations.Identify || "Identify") + '</a>' +
-          '<span class="separator">•</span>' +
-          '<a href="javascript:void(0)" class="link-subtle" onclick="openDisplaySettings()">' + (translations.OpenWindowsSettings || "Windows Settings") + '</a>' +
         '</div>';
       parentItem.parentNode.insertBefore(row, parentItem.nextSibling);
     }
   }
+
+  // Закрытие выпадайки чекбоксов при клике в любое другое место
+  document.addEventListener("click", function () {
+    document.querySelectorAll(".multiselect-box.open").forEach(function (box) {
+      box.classList.remove("open");
+    });
+  });
 
   function requestRefreshRates() {
     var rateSel = document.getElementById("refreshRates");

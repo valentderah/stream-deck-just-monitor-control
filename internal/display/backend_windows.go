@@ -351,7 +351,17 @@ func (m *windowsManager) SetInputSource(ctx context.Context, monitorID string, s
 }
 
 func (m *windowsManager) GetInputSource(ctx context.Context, monitorID string) (uint32, error) {
-	return m.getVCP(monitorID, VCPInput)
+	if c, ok := m.cache.Get(monitorID); ok && c.CurrentPort > 0 {
+		return c.CurrentPort, nil
+	}
+	val, err := m.getVCP(monitorID, VCPInput)
+	if err == nil && val > 0 {
+		if c, ok := m.cache.Get(monitorID); ok {
+			c.CurrentPort = val
+			m.cache.Set(c)
+		}
+	}
+	return val, err
 }
 
 func (m *windowsManager) SetVCP(ctx context.Context, monitorID string, code byte, value uint32) error {

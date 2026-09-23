@@ -17,18 +17,12 @@ func NewInputSwitch(mgr display.Manager, resp Responder) *InputSwitch {
 }
 
 type inputSettings struct {
-	Mode      string `json:"mode"`
-	Port      uint32 `json:"port"`
-	PortA     uint32 `json:"portA"`
-	PortB     uint32 `json:"portB"`
-	MonitorID string `json:"monitorId"`
-}
-
-func nextTogglePort(current, a, b uint32) uint32 {
-	if current == a {
-		return b
-	}
-	return a
+	Mode         string `json:"mode"`
+	Port         uint32 `json:"port"`
+	PortA        uint32 `json:"portA"`
+	PortB        uint32 `json:"portB"`
+	MonitorID    string `json:"monitorId"`
+	CurrentState int    `json:"currentState"` // 0 = Port A, 1 = Port B
 }
 
 func (a *InputSwitch) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
@@ -39,33 +33,66 @@ func (a *InputSwitch) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 		return display.ErrNoMonitorsSelected
 	}
 
+	// Дефолтные порты, если пользователь не менял селекторы
+	if s.Port == 0 {
+		s.Port = 15 // DisplayPort 1
+	}
+	if s.PortA == 0 {
+		s.PortA = 15 // DisplayPort 1
+	}
+	if s.PortB == 0 {
+		s.PortB = 17 // HDMI 1
+	}
+
 	var target uint32
-	var targetState int
+	var nextState int
 
 	switch s.Mode {
 	case "toggle":
 		cur, err := a.mgr.GetInputSource(ctx, s.MonitorID)
-		if err != nil {
-			cur = s.PortA
-		}
-		target = nextTogglePort(cur, s.PortA, s.PortB)
-		if target == s.PortB {
-			targetState = 1
+		if err == nil && cur > 0 {
+			if cur == s.PortA {
+				// Монитор точно на Port A -> переключаем на Port B
+				target = s.PortB
+				nextState = 1
+			} else if cur == s.PortB {
+				// Монитор точно на Port B -> переключаем на Port A
+				target = s.PortA
+				nextState = 0
+			} else {
+				// Монитор на стороннем входе -> переключаем по сохраненному состоянию кнопки
+				if s.CurrentState == 0 {
+					target = s.PortB
+					nextState = 1
+				} else {
+					target = s.PortA
+					nextState = 0
+				}
+			}
 		} else {
-			targetState = 0
+			// Чтение не удалось или не поддерживается -> надежно шагаем по сохраненному стейту
+			if s.CurrentState == 0 {
+				target = s.PortB
+				nextState = 1
+			} else {
+				target = s.PortA
+				nextState = 0
+			}
 		}
-	default:
+
+		s.CurrentState = nextState
+		_ = a.resp.SetSettings(ev.Context, s)
+		_ = a.resp.SetState(ev.Context, nextState)
+
+	default: // Direct
 		target = s.Port
-		targetState = 0
+		nextState = 0
+		_ = a.resp.SetState(ev.Context, 0)
 	}
 
 	if err := a.mgr.SetInputSource(ctx, s.MonitorID, target); err != nil {
 		_ = a.resp.ShowAlert(ev.Context)
 		return err
-	}
-
-	if s.Mode == "toggle" {
-		_ = a.resp.SetState(ev.Context, targetState)
 	}
 
 	_ = a.resp.ShowOk(ev.Context)
@@ -79,13 +106,23 @@ func (a *InputSwitch) OnWillAppear(ctx context.Context, ev streamdeck.Event) err
 		return nil
 	}
 
-	if cur, err := a.mgr.GetInputSource(ctx, s.MonitorID); err == nil {
+	if s.PortA == 0 {
+		s.PortA = 15
+	}
+	if s.PortB == 0 {
+		s.PortB = 17
+	}
+
+	// Синхронизируем состояние при старте, если монитор отвечает
+	if cur, err := a.mgr.GetInputSource(ctx, s.MonitorID); err == nil && cur > 0 {
 		if cur == s.PortB {
-			_ = a.resp.SetState(ev.Context, 1)
-		} else {
-			_ = a.resp.SetState(ev.Context, 0)
+			s.CurrentState = 1
+		} else if cur == s.PortA {
+			s.CurrentState = 0
 		}
 	}
+
+	_ = a.resp.SetState(ev.Context, s.CurrentState)
 	return nil
 }
 
