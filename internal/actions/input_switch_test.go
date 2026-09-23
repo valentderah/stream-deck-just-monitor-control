@@ -2,7 +2,6 @@ package actions
 
 import "testing"
 
-// toggleDecision mirrors the toggle branch in OnKeyUp for unit coverage.
 func toggleDecision(cur uint32, readOK bool, portA, portB uint32, currentState int) (target uint32, nextState int) {
 	if readOK && cur > 0 {
 		if cur == portA {

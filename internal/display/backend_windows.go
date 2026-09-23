@@ -5,6 +5,7 @@ package display
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 	"syscall"
@@ -430,6 +431,12 @@ func (m *windowsManager) ListRefreshRates(ctx context.Context, monitorID string)
 	if len(out) == 0 {
 		return nil, fmt.Errorf("display: no refresh rates found for %s", monitorID)
 	}
+
+	// Sort ascending (e.g. 48 Hz -> 60 Hz -> 120 Hz -> 144 Hz).
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Hertz() < out[j].Hertz()
+	})
+
 	return out, nil
 }
 
