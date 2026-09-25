@@ -1,6 +1,6 @@
 {
   "Name": "Just Monitor Control",
-  "Version": "0.8.4.0",
+  "Version": "0.8.7.0",
   "Author": "Valiantsin Dzerakh",
   "Actions": [
     {
@@ -21,7 +21,7 @@
       "Controllers": ["Keypad"],
       "States": [
         { "Image": "imgs/actions/input", "TitleAlignment": "bottom" },
-        { "Image": "imgs/actions/input", "TitleAlignment": "bottom" }
+        { "Image": "imgs/actions/input-b", "TitleAlignment": "bottom" }
       ]
     },
     {
@@ -41,7 +41,7 @@
       "PropertyInspectorPath": "ui/hdr.html",
       "Controllers": ["Keypad"],
       "States": [
-        { "Image": "imgs/actions/hdr", "TitleAlignment": "bottom" },
+        { "Image": "imgs/actions/hdr-off", "TitleAlignment": "bottom" },
         { "Image": "imgs/actions/hdr", "TitleAlignment": "bottom" }
       ]
     },
@@ -54,7 +54,7 @@
       "Controllers": ["Keypad"],
       "States": [
         { "Image": "imgs/actions/sleep", "TitleAlignment": "bottom" },
-        { "Image": "imgs/actions/sleep", "TitleAlignment": "bottom" }
+        { "Image": "imgs/actions/sleep-asleep", "TitleAlignment": "bottom" }
       ]
     },
     {
