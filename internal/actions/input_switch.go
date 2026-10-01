@@ -9,15 +9,21 @@ import (
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/streamdeck"
 )
 
+const (
+	inputConfirmationAttempts = 6
+	inputConfirmationDelay    = 500 * time.Millisecond
+)
+
 var errInputSourceNotConfirmed = errors.New("input source not confirmed")
 
 func waitForInputSource(
 	ctx context.Context,
-	target uint32,
+	target, previous uint32,
 	attempts int,
 	delay time.Duration,
 	read func(context.Context) (uint32, error),
 ) error {
+	sawValue := false
 	for range attempts {
 		timer := time.NewTimer(delay)
 		select {
@@ -33,11 +39,34 @@ func waitForInputSource(
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
-		if err == nil && current == target {
+		if err != nil || current == 0 {
+			continue
+		}
+		sawValue = true
+		if current == target {
 			return nil
 		}
 	}
+	if !sawValue && previous > 0 {
+		return nil
+	}
 	return errInputSourceNotConfirmed
+}
+
+func toggleTarget(current uint32, known bool, portA, portB uint32, state int) (target, previous uint32, nextState int) {
+	if known && current > 0 {
+		previous = current
+		if current == portA {
+			return portB, previous, 1
+		}
+		if current == portB {
+			return portA, previous, 0
+		}
+	}
+	if state == 0 {
+		return portB, previous, 1
+	}
+	return portA, previous, 0
 }
 
 type InputSwitch struct {
@@ -66,7 +95,6 @@ func (a *InputSwitch) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 		return display.ErrNoMonitorsSelected
 	}
 
-	// Дефолтные порты, если пользователь не менял селекторы
 	if s.Port == 0 {
 		s.Port = 15 // DisplayPort 1
 	}
@@ -78,45 +106,13 @@ func (a *InputSwitch) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 	}
 
 	var target uint32
+	var previous uint32
 	var nextState int
-	isToggle := s.Mode == "toggle"
-
-	switch s.Mode {
-	case "toggle":
+	if s.Mode == "toggle" {
 		cur, err := a.mgr.GetInputSource(ctx, s.MonitorID)
-		if err == nil && cur > 0 {
-			if cur == s.PortA {
-				// Монитор точно на Port A -> переключаем на Port B
-				target = s.PortB
-				nextState = 1
-			} else if cur == s.PortB {
-				// Монитор точно на Port B -> переключаем на Port A
-				target = s.PortA
-				nextState = 0
-			} else {
-				// Монитор на стороннем входе -> переключаем по сохраненному состоянию кнопки
-				if s.CurrentState == 0 {
-					target = s.PortB
-					nextState = 1
-				} else {
-					target = s.PortA
-					nextState = 0
-				}
-			}
-		} else {
-			// Чтение не удалось или не поддерживается -> надежно шагаем по сохраненному стейту
-			if s.CurrentState == 0 {
-				target = s.PortB
-				nextState = 1
-			} else {
-				target = s.PortA
-				nextState = 0
-			}
-		}
-
-	default: // Direct
+		target, previous, nextState = toggleTarget(cur, err == nil, s.PortA, s.PortB, s.CurrentState)
+	} else {
 		target = s.Port
-		nextState = 0
 		_ = a.resp.SetState(ev.Context, 0)
 	}
 
@@ -125,8 +121,8 @@ func (a *InputSwitch) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 		return err
 	}
 
-	if isToggle {
-		err := waitForInputSource(ctx, target, 3, 250*time.Millisecond, func(ctx context.Context) (uint32, error) {
+	if s.Mode == "toggle" {
+		err := waitForInputSource(ctx, target, previous, inputConfirmationAttempts, inputConfirmationDelay, func(ctx context.Context) (uint32, error) {
 			return a.mgr.GetInputSource(ctx, s.MonitorID)
 		})
 		if err != nil {
@@ -148,22 +144,6 @@ func (a *InputSwitch) OnWillAppear(ctx context.Context, ev streamdeck.Event) err
 	_ = parseSettings(ev, &s)
 	if s.MonitorID == "" || s.Mode != "toggle" {
 		return nil
-	}
-
-	if s.PortA == 0 {
-		s.PortA = 15
-	}
-	if s.PortB == 0 {
-		s.PortB = 17
-	}
-
-	// Синхронизируем состояние при старте, если монитор отвечает
-	if cur, err := a.mgr.GetInputSource(ctx, s.MonitorID); err == nil && cur > 0 {
-		if cur == s.PortB {
-			s.CurrentState = 1
-		} else if cur == s.PortA {
-			s.CurrentState = 0
-		}
 	}
 
 	_ = a.resp.SetState(ev.Context, s.CurrentState)

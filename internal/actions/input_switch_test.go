@@ -16,7 +16,7 @@ func TestWaitForInputSourceStopsAfterMatch(t *testing.T) {
 		return 17, nil
 	}
 
-	err := waitForInputSource(context.Background(), 17, 3, 0, read)
+	err := waitForInputSource(context.Background(), 17, 15, 3, 0, read)
 	if err != nil {
 		t.Fatalf("waitForInputSource returned error: %v", err)
 	}
@@ -36,11 +36,33 @@ func TestWaitForInputSourceReturnsNotConfirmedAfterAttempts(t *testing.T) {
 		return 15, nil
 	}
 
-	err := waitForInputSource(context.Background(), 17, 3, 0, read)
+	err := waitForInputSource(context.Background(), 17, 15, 3, 0, read)
 	if !errors.Is(err, errInputSourceNotConfirmed) {
 		t.Fatalf("waitForInputSource returned %v, want %v", err, errInputSourceNotConfirmed)
 	}
 	if reads != 3 {
 		t.Fatalf("read called %d times, want 3", reads)
+	}
+}
+
+func TestWaitForInputSourceAcceptsUnreadableMonitorAfterSwitch(t *testing.T) {
+	read := func(context.Context) (uint32, error) {
+		return 0, errors.New("read failed")
+	}
+
+	err := waitForInputSource(context.Background(), 18, 15, 3, 0, read)
+	if err != nil {
+		t.Fatalf("waitForInputSource returned error: %v", err)
+	}
+}
+
+func TestWaitForInputSourceRejectsMonitorThatStaysOnPreviousInput(t *testing.T) {
+	read := func(context.Context) (uint32, error) {
+		return 15, nil
+	}
+
+	err := waitForInputSource(context.Background(), 18, 15, 3, 0, read)
+	if !errors.Is(err, errInputSourceNotConfirmed) {
+		t.Fatalf("waitForInputSource returned %v, want %v", err, errInputSourceNotConfirmed)
 	}
 }

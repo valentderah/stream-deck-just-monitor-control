@@ -261,7 +261,6 @@
       requestRefreshRates();
     }
 
-    // Добавляем строчку с кнопкой Identify (без Windows Display Settings)
     var parentItem = host.closest(".sdpi-item");
     if (parentItem && !document.getElementById("monitorActionRow")) {
       var row = document.createElement("div");
@@ -276,7 +275,6 @@
     }
   }
 
-  // Закрытие выпадайки чекбоксов при клике в любое другое место
   document.addEventListener("click", function () {
     document.querySelectorAll(".multiselect-box.open").forEach(function (box) {
       box.classList.remove("open");
