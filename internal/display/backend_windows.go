@@ -18,7 +18,6 @@ import (
 
 const (
 	VCPBrightness        = 0x10
-	VCPInput             = 0x60
 	VCPPowerMode         = 0xD6
 	ddcInterCommandDelay = 40 * time.Millisecond
 	wmSysCommand         = 0x0112
@@ -341,28 +340,13 @@ func (m *windowsManager) GetBrightness(ctx context.Context, monitorID string) (u
 }
 
 func (m *windowsManager) SetInputSource(ctx context.Context, monitorID string, source uint32) error {
-	err := m.setVCP(monitorID, VCPInput, source)
-	if err == nil {
-		if c, ok := m.cache.Get(monitorID); ok {
-			c.CurrentPort = source
-			m.cache.Set(c)
-		}
-	}
-	return err
+	return m.setVCP(monitorID, VCPInputSource, source)
 }
 
 func (m *windowsManager) GetInputSource(ctx context.Context, monitorID string) (uint32, error) {
-	if c, ok := m.cache.Get(monitorID); ok && c.CurrentPort > 0 {
-		return c.CurrentPort, nil
-	}
-	val, err := m.getVCP(monitorID, VCPInput)
-	if err == nil && val > 0 {
-		if c, ok := m.cache.Get(monitorID); ok {
-			c.CurrentPort = val
-			m.cache.Set(c)
-		}
-	}
-	return val, err
+	return readAndCacheInputSource(m.cache, monitorID, func() (uint32, error) {
+		return m.getVCP(monitorID, VCPInputSource)
+	})
 }
 
 func (m *windowsManager) SetVCP(ctx context.Context, monitorID string, code byte, value uint32) error {

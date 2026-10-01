@@ -2,10 +2,43 @@ package actions
 
 import (
 	"context"
+	"errors"
+	"time"
 
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/display"
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/streamdeck"
 )
+
+var errInputSourceNotConfirmed = errors.New("input source not confirmed")
+
+func waitForInputSource(
+	ctx context.Context,
+	target uint32,
+	attempts int,
+	delay time.Duration,
+	read func(context.Context) (uint32, error),
+) error {
+	for range attempts {
+		timer := time.NewTimer(delay)
+		select {
+		case <-ctx.Done():
+			if !timer.Stop() {
+				<-timer.C
+			}
+			return ctx.Err()
+		case <-timer.C:
+		}
+
+		current, err := read(ctx)
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+		if err == nil && current == target {
+			return nil
+		}
+	}
+	return errInputSourceNotConfirmed
+}
 
 type InputSwitch struct {
 	mgr  display.Manager
@@ -46,6 +79,7 @@ func (a *InputSwitch) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 
 	var target uint32
 	var nextState int
+	isToggle := s.Mode == "toggle"
 
 	switch s.Mode {
 	case "toggle":
@@ -80,10 +114,6 @@ func (a *InputSwitch) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 			}
 		}
 
-		s.CurrentState = nextState
-		_ = a.resp.SetSettings(ev.Context, s)
-		_ = a.resp.SetState(ev.Context, nextState)
-
 	default: // Direct
 		target = s.Port
 		nextState = 0
@@ -93,6 +123,20 @@ func (a *InputSwitch) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 	if err := a.mgr.SetInputSource(ctx, s.MonitorID, target); err != nil {
 		_ = a.resp.ShowAlert(ev.Context)
 		return err
+	}
+
+	if isToggle {
+		err := waitForInputSource(ctx, target, 3, 250*time.Millisecond, func(ctx context.Context) (uint32, error) {
+			return a.mgr.GetInputSource(ctx, s.MonitorID)
+		})
+		if err != nil {
+			_ = a.resp.ShowAlert(ev.Context)
+			return err
+		}
+
+		s.CurrentState = nextState
+		_ = a.resp.SetSettings(ev.Context, s)
+		_ = a.resp.SetState(ev.Context, nextState)
 	}
 
 	_ = a.resp.ShowOk(ev.Context)

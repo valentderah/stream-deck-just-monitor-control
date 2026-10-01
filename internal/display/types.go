@@ -1,5 +1,7 @@
 package display
 
+const VCPInputSource = 0x60
+
 // RefreshRate is a DXGI/DisplayConfig-style rational (e.g. 60000/1001 ≈ 59.94 Hz).
 type RefreshRate struct {
 	Numerator   uint32 `json:"numerator"`

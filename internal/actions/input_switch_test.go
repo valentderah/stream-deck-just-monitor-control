@@ -1,49 +1,46 @@
 package actions
 
-import "testing"
+import (
+	"context"
+	"errors"
+	"testing"
+)
 
-func toggleDecision(cur uint32, readOK bool, portA, portB uint32, currentState int) (target uint32, nextState int) {
-	if readOK && cur > 0 {
-		if cur == portA {
-			return portB, 1
+func TestWaitForInputSourceStopsAfterMatch(t *testing.T) {
+	reads := 0
+	read := func(context.Context) (uint32, error) {
+		reads++
+		if reads == 1 {
+			return 15, nil
 		}
-		if cur == portB {
-			return portA, 0
-		}
+		return 17, nil
 	}
-	if currentState == 0 {
-		return portB, 1
+
+	err := waitForInputSource(context.Background(), 17, 3, 0, read)
+	if err != nil {
+		t.Fatalf("waitForInputSource returned error: %v", err)
 	}
-	return portA, 0
+	if reads != 2 {
+		t.Fatalf("read called %d times, want 2", reads)
+	}
 }
 
-func TestToggleDecision(t *testing.T) {
-	const portA, portB uint32 = 0x0F, 0x11
-
-	target, state := toggleDecision(portA, true, portA, portB, 0)
-	if target != portB || state != 1 {
-		t.Fatalf("on Port A: got target=%d state=%d", target, state)
+func TestWaitForInputSourceReturnsNotConfirmedAfterAttempts(t *testing.T) {
+	reads := 0
+	readErr := errors.New("read failed")
+	read := func(context.Context) (uint32, error) {
+		reads++
+		if reads == 2 {
+			return 0, readErr
+		}
+		return 15, nil
 	}
 
-	target, state = toggleDecision(portB, true, portA, portB, 1)
-	if target != portA || state != 0 {
-		t.Fatalf("on Port B: got target=%d state=%d", target, state)
+	err := waitForInputSource(context.Background(), 17, 3, 0, read)
+	if !errors.Is(err, errInputSourceNotConfirmed) {
+		t.Fatalf("waitForInputSource returned %v, want %v", err, errInputSourceNotConfirmed)
 	}
-
-	// GetVCP returned 0 / timeout — must flip by saved button state, not fall back to Port A
-	target, state = toggleDecision(0, false, portA, portB, 0)
-	if target != portB || state != 1 {
-		t.Fatalf("read fail from state 0: got target=%d state=%d", target, state)
-	}
-
-	target, state = toggleDecision(0, true, portA, portB, 1)
-	if target != portA || state != 0 {
-		t.Fatalf("cur=0 from state 1: got target=%d state=%d", target, state)
-	}
-
-	// Third-party input — step by saved state
-	target, state = toggleDecision(0x01, true, portA, portB, 0)
-	if target != portB || state != 1 {
-		t.Fatalf("other input from state 0: got target=%d state=%d", target, state)
+	if reads != 3 {
+		t.Fatalf("read called %d times, want 3", reads)
 	}
 }
