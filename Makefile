@@ -20,7 +20,7 @@ all: package
 help:
 	@echo Targets:
 	@echo   make build     - assemble plugin bundle into $(BUNDLE)/
-	@echo   make package   - build + pack .streamDeckPlugin into $(DIST)/
+	@echo   make package   - build, validate, and pack .streamDeckPlugin into $(DIST)/
 	@echo   make validate  - validate $(BUNDLE) with Stream Deck CLI
 	@echo   make link      - link $(BUNDLE) into Stream Deck (dev install)
 	@echo   make test      - run tests
@@ -31,6 +31,7 @@ build:
 	$(BUILD_CMD)
 
 package pack zip: build
+	$(STREAMDECK) validate --no-update-check "$(BUNDLE)"
 	$(MKDIR_DIST)
 	$(STREAMDECK) pack -f --no-update-check -o "$(DIST)" "$(BUNDLE)"
 
@@ -42,6 +43,7 @@ link: build
 
 test:
 	go test ./...
+	node --test test/js/inspector-core.test.js
 
 clean:
 	$(CLEAN_CMD)

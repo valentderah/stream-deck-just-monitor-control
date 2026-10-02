@@ -2,8 +2,12 @@ package actions
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"testing"
+
+	"github.com/valentderah/stream-deck-just-monitor-control/internal/inspector"
+	"github.com/valentderah/stream-deck-just-monitor-control/internal/streamdeck"
 )
 
 func TestWaitForInputSourceStopsAfterMatch(t *testing.T) {
@@ -64,5 +68,52 @@ func TestWaitForInputSourceRejectsMonitorThatStaysOnPreviousInput(t *testing.T) 
 	err := waitForInputSource(context.Background(), 18, 15, 3, 0, read)
 	if !errors.Is(err, errInputSourceNotConfirmed) {
 		t.Fatalf("waitForInputSource returned %v, want %v", err, errInputSourceNotConfirmed)
+	}
+}
+
+func settingsEvent(settings string) streamdeck.Event {
+	return streamdeck.Event{Context: "ctx", Payload: json.RawMessage(`{"settings":` + settings + `}`)}
+}
+
+func TestInputSchemaMatchesSettings(t *testing.T) {
+	if err := inspector.Verify(inputSchema, defaultInputSettings()); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestDecodeInputSettings(t *testing.T) {
+	cases := []struct {
+		name     string
+		settings string
+		want     inputSettings
+	}{
+		{"missing keys keep defaults", `{"monitorId":"m"}`,
+			inputSettings{Mode: InputModeDirect, Port: 15, PortA: 15, PortB: 17, MonitorID: "m"}},
+		{"zero ports and empty mode become defaults", `{"mode":"","port":0,"portA":0,"portB":0}`,
+			inputSettings{Mode: InputModeDirect, Port: 15, PortA: 15, PortB: 17}},
+		{"saved values and current state kept", `{"mode":"toggle","portA":18,"currentState":1}`,
+			inputSettings{Mode: InputModeToggle, Port: 15, PortA: 18, PortB: 17, CurrentState: 1}},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			got, err := decodeSettings(settingsEvent(c.settings), inputSchema, defaultInputSettings())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got != c.want {
+				t.Fatalf("got %+v want %+v", got, c.want)
+			}
+		})
+	}
+}
+
+func TestInputSwitchRejectsInvalidMode(t *testing.T) {
+	resp := &fakeResponder{}
+	err := NewInputSwitch(&fakeManager{}, resp).OnKeyUp(context.Background(), settingsEvent(`{"monitorId":"m","mode":"bogus"}`))
+	if !errors.Is(err, errInvalidMode) {
+		t.Fatalf("got %v, want errInvalidMode", err)
+	}
+	if resp.alerts != 1 {
+		t.Fatalf("alerts = %d, want 1", resp.alerts)
 	}
 }

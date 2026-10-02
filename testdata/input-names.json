@@ -1,0 +1,12 @@
+{
+  "known": [
+    { "code": 15, "name": "DisplayPort 1" },
+    { "code": 27, "name": "USB-C / Type-C" },
+    { "code": 1, "name": "VGA" }
+  ],
+  "unknown": [
+    { "code": 32, "name": "Input 0x20" },
+    { "code": 5, "name": "Input 0x05" },
+    { "code": 300, "name": "Input 0x12C" }
+  ]
+}

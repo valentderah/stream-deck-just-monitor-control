@@ -2,23 +2,15 @@ name: Build
 
 on:
   push:
+    branches: [dev, main]
+    tags: ["v*"]
   pull_request:
 
 permissions:
   contents: write
 
 jobs:
-  setup:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup environment
-        uses: ./.github/actions/setup-ci
-
-  test:
-    needs: setup
+  build:
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -29,19 +21,6 @@ jobs:
 
       - name: Test
         run: make test
-
-  build:
-    needs: test
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup environment
-        uses: ./.github/actions/setup-ci
-
-      - name: Build
-        run: make build
 
       - name: Check manifest version for release tags
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')

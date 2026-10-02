@@ -3,13 +3,17 @@ package actions
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"sync"
 
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/display"
+	"github.com/valentderah/stream-deck-just-monitor-control/internal/inspector"
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/streamdeck"
 )
 
-func parseSettings(ev streamdeck.Event, dest any) error {
+var errInvalidMode = errors.New("actions: invalid mode")
+
+func settingsPayload(ev streamdeck.Event) json.RawMessage {
 	if len(ev.Payload) == 0 {
 		return nil
 	}
@@ -17,9 +21,13 @@ func parseSettings(ev streamdeck.Event, dest any) error {
 		Settings json.RawMessage `json:"settings"`
 	}
 	if err := json.Unmarshal(ev.Payload, &wrap); err == nil && len(wrap.Settings) > 0 {
-		return json.Unmarshal(wrap.Settings, dest)
+		return wrap.Settings
 	}
-	return json.Unmarshal(ev.Payload, dest)
+	return ev.Payload
+}
+
+func decodeSettings[T any](ev streamdeck.Event, schema inspector.Schema, defaults T) (T, error) {
+	return inspector.Decode(schema, defaults, settingsPayload(ev))
 }
 
 func parsePluginMessage(ev streamdeck.Event) (map[string]any, error) {
@@ -33,8 +41,11 @@ func parsePluginMessage(ev streamdeck.Event) (map[string]any, error) {
 
 func sendMonitorsPayload(ctx context.Context, mgr display.Manager, resp Responder, ev streamdeck.Event) error {
 	mons, err := mgr.GetMonitors(ctx)
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		return err
+	}
 	if err != nil {
-		mons = nil
+		mons = []display.Monitor{}
 	}
 	return resp.SendToPropertyInspector(ev.Context, ev.Action, map[string]any{
 		"type":     "monitors",
@@ -42,12 +53,19 @@ func sendMonitorsPayload(ctx context.Context, mgr display.Manager, resp Responde
 	})
 }
 
-func HandleCommonPluginMessage(ctx context.Context, mgr display.Manager, resp Responder, ev streamdeck.Event) bool {
+func HandleCommonPluginMessage(ctx context.Context, mgr display.Manager, resp Responder, ev streamdeck.Event, schema inspector.Schema) bool {
 	msg, err := parsePluginMessage(ev)
 	if err != nil {
 		return false
 	}
 	switch msg["type"] {
+	case "get_inspector":
+		_ = resp.SendToPropertyInspector(ev.Context, ev.Action, map[string]any{
+			"type":   "schema",
+			"schema": schema,
+		})
+		_ = sendMonitorsPayload(ctx, mgr, resp, ev)
+		return true
 	case "get_monitors":
 		_ = sendMonitorsPayload(ctx, mgr, resp, ev)
 		return true

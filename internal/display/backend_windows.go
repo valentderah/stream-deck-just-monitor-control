@@ -53,6 +53,8 @@ var (
 	procDestroyPhysicalMonitors                 = dxva2.NewProc("DestroyPhysicalMonitors")
 	procGetVCPFeatureAndVCPFeatureReply         = dxva2.NewProc("GetVCPFeatureAndVCPFeatureReply")
 	procSetVCPFeature                           = dxva2.NewProc("SetVCPFeature")
+	procGetCapabilitiesStringLength             = dxva2.NewProc("GetCapabilitiesStringLength")
+	procCapabilitiesRequestAndCapabilitiesReply = dxva2.NewProc("CapabilitiesRequestAndCapabilitiesReply")
 )
 
 type PHYSICAL_MONITOR struct {
@@ -173,11 +175,12 @@ type DISPLAYCONFIG_MODE_INFO struct {
 }
 
 type windowsManager struct {
-	cache *Cache
-	locks *IDLocks
-	mu    sync.Mutex
-	hdrMu sync.Mutex
-	byID  map[string]monitorRef
+	cache  *Cache
+	inputs *InputCache
+	locks  *IDLocks
+	mu     sync.Mutex
+	hdrMu  sync.Mutex
+	byID   map[string]monitorRef
 }
 
 type monitorRef struct {
@@ -193,11 +196,13 @@ type monitorRef struct {
 }
 
 func NewManager() Manager {
-	return &windowsManager{
+	m := &windowsManager{
 		cache: NewCache(),
 		locks: NewIDLocks(),
 		byID:  make(map[string]monitorRef),
 	}
+	m.inputs = NewInputCache(m.readCapabilitiesLocked, m.locks)
+	return m
 }
 
 func extractModelFromEDID(edid []byte) string {
@@ -272,35 +277,29 @@ func (m *windowsManager) GetMonitors(ctx context.Context) ([]Monitor, error) {
 		return nil, err
 	}
 	m.mu.Lock()
-	ids := make([]string, 0, len(m.byID))
-	for id := range m.byID {
-		ids = append(ids, id)
-	}
-	m.mu.Unlock()
-
-	out := make([]Monitor, 0, len(ids))
-	for _, id := range ids {
-		m.mu.Lock()
-		ref := m.byID[id]
-		m.mu.Unlock()
-
-		mon := Monitor{
+	mons := make([]Monitor, 0, len(m.byID))
+	for id, ref := range m.byID {
+		mons = append(mons, Monitor{
 			ID:         id,
 			Name:       ref.name,
 			DisplayNum: ref.displayNum,
 			IsPrimary:  ref.isPrimary,
-			Inputs:     DefaultInputPorts(),
-		}
-
-		if cached, ok := m.cache.Get(id); ok {
-			mon.Brightness = cached.Brightness
-			mon.CurrentPort = cached.CurrentPort
-		}
-
-		m.cache.Set(mon)
-		out = append(out, mon)
+		})
 	}
-	return out, nil
+	m.mu.Unlock()
+
+	mons, err := buildMonitors(ctx, mons, m.inputs.Inputs)
+	if err != nil {
+		return nil, err
+	}
+	for i := range mons {
+		if cached, ok := m.cache.Get(mons[i].ID); ok {
+			mons[i].Brightness = cached.Brightness
+			mons[i].CurrentPort = cached.CurrentPort
+		}
+		m.cache.Set(mons[i])
+	}
+	return mons, nil
 }
 
 func (m *windowsManager) Identify(ctx context.Context) error {
@@ -757,6 +756,44 @@ func (m *windowsManager) withPhysicalMonitors(hmon windows.Handle, fn func([]PHY
 func (m *windowsManager) getVCPLocked(hmon windows.Handle, code byte) (uint32, error) {
 	cur, _, err := m.getVCPFeatureLocked(hmon, code)
 	return cur, err
+}
+
+func (m *windowsManager) readCapabilitiesLocked(monitorID string) (string, error) {
+	ref, err := m.resolve(monitorID)
+	if err != nil {
+		return "", err
+	}
+	var caps string
+	err = m.withPhysicalMonitors(ref.hmon, func(mons []PHYSICAL_MONITOR) error {
+		var last error
+		for _, pm := range mons {
+			var length uint32
+			r1, _, callErr := procGetCapabilitiesStringLength.Call(
+				uintptr(pm.HPhysicalMonitor),
+				uintptr(unsafe.Pointer(&length)),
+			)
+			time.Sleep(ddcInterCommandDelay)
+			if r1 == 0 || length == 0 {
+				last = callErr
+				continue
+			}
+			buf := make([]byte, length)
+			r1, _, callErr = procCapabilitiesRequestAndCapabilitiesReply.Call(
+				uintptr(pm.HPhysicalMonitor),
+				uintptr(unsafe.Pointer(&buf[0])),
+				uintptr(length),
+			)
+			time.Sleep(ddcInterCommandDelay)
+			if r1 == 0 {
+				last = callErr
+				continue
+			}
+			caps = windows.ByteSliceToString(buf)
+			return nil
+		}
+		return last
+	})
+	return caps, err
 }
 
 func (m *windowsManager) getVCPFeatureLocked(hmon windows.Handle, code byte) (current, max uint32, err error) {

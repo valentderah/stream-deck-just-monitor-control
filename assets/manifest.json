@@ -1,23 +1,23 @@
 {
   "Name": "Just Monitor Control",
-  "Version": "0.8.8.0",
+  "Version": "0.9.2.0",
   "Author": "Valiantsin Dzerakh",
   "Actions": [
     {
       "Name": "Brightness",
       "UUID": "com.valentderah.just-monitor-control.brightness",
-      "Icon": "imgs/actions/brightness",
+      "Icon": "imgs/actions/list/brightness",
       "Tooltip": "Set, step, or toggle monitor brightness.",
-      "PropertyInspectorPath": "ui/brightness.html",
+      "PropertyInspectorPath": "ui/inspector.html",
       "Controllers": ["Keypad"],
       "States": [{ "Image": "imgs/actions/brightness", "TitleAlignment": "bottom" }]
     },
     {
       "Name": "Input Switch",
       "UUID": "com.valentderah.just-monitor-control.input-switch",
-      "Icon": "imgs/actions/input",
+      "Icon": "imgs/actions/list/input",
       "Tooltip": "Switch monitor input port.",
-      "PropertyInspectorPath": "ui/input-switch.html",
+      "PropertyInspectorPath": "ui/inspector.html",
       "Controllers": ["Keypad"],
       "States": [
         { "Image": "imgs/actions/input", "TitleAlignment": "bottom" },
@@ -27,18 +27,18 @@
     {
       "Name": "Refresh Rate",
       "UUID": "com.valentderah.just-monitor-control.refresh-rate",
-      "Icon": "imgs/actions/refresh",
+      "Icon": "imgs/actions/list/refresh",
       "Tooltip": "Change display refresh rate.",
-      "PropertyInspectorPath": "ui/refresh-rate.html",
+      "PropertyInspectorPath": "ui/inspector.html",
       "Controllers": ["Keypad"],
       "States": [{ "Image": "imgs/actions/refresh", "TitleAlignment": "bottom" }]
     },
     {
       "Name": "HDR",
       "UUID": "com.valentderah.just-monitor-control.hdr",
-      "Icon": "imgs/actions/hdr",
+      "Icon": "imgs/actions/list/hdr",
       "Tooltip": "Toggle HDR on selected monitors.",
-      "PropertyInspectorPath": "ui/hdr.html",
+      "PropertyInspectorPath": "ui/inspector.html",
       "Controllers": ["Keypad"],
       "States": [
         { "Image": "imgs/actions/hdr-off", "TitleAlignment": "bottom" },
@@ -48,9 +48,9 @@
     {
       "Name": "Sleep",
       "UUID": "com.valentderah.just-monitor-control.sleep",
-      "Icon": "imgs/actions/sleep",
+      "Icon": "imgs/actions/list/sleep",
       "Tooltip": "Sleep or wake monitors.",
-      "PropertyInspectorPath": "ui/sleep.html",
+      "PropertyInspectorPath": "ui/inspector.html",
       "Controllers": ["Keypad"],
       "States": [
         { "Image": "imgs/actions/sleep", "TitleAlignment": "bottom" },
@@ -60,9 +60,9 @@
     {
       "Name": "Raw VCP",
       "UUID": "com.valentderah.just-monitor-control.raw-vcp",
-      "Icon": "imgs/actions/vcp",
+      "Icon": "imgs/actions/list/vcp",
       "Tooltip": "Send a raw DDC/CI VCP code.",
-      "PropertyInspectorPath": "ui/raw-vcp.html",
+      "PropertyInspectorPath": "ui/inspector.html",
       "Controllers": ["Keypad"],
       "States": [{ "Image": "imgs/actions/vcp", "TitleAlignment": "bottom" }]
     }

@@ -5,20 +5,6 @@ import (
 	"strings"
 )
 
-// DefaultInputPorts used when MCCS capabilities cannot be read.
-func DefaultInputPorts() []uint32 {
-	return []uint32{0x0F, 0x10, 0x11, 0x12}
-}
-
-// InputsFromCapabilities parses VCP 0x60 values or returns DefaultInputPorts.
-func InputsFromCapabilities(caps string) []uint32 {
-	vals, err := ParseVCPValues(caps, 0x60)
-	if err != nil || len(vals) == 0 {
-		return DefaultInputPorts()
-	}
-	return vals
-}
-
 // ParseVCPValues extracts allowed values for a VCP code from an MCCS capabilities string.
 // Looks for patterns like 60(01 03 0F 11) inside a vcp(...) block (case-insensitive hex).
 func ParseVCPValues(caps string, code byte) ([]uint32, error) {

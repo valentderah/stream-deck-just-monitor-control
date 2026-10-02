@@ -16,15 +16,3 @@ func TestParseVCP60FromCapabilities(t *testing.T) {
 		t.Fatalf("got %v want %v", vals, want)
 	}
 }
-
-func TestInputsFromCapabilitiesFallsBack(t *testing.T) {
-	got := InputsFromCapabilities("")
-	want := DefaultInputPorts()
-	if !reflect.DeepEqual(got, want) {
-		t.Fatalf("got %v want %v", got, want)
-	}
-	got = InputsFromCapabilities("vcp(10 12)")
-	if !reflect.DeepEqual(got, want) {
-		t.Fatalf("missing 60: got %v want %v", got, want)
-	}
-}

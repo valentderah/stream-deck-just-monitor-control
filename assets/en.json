@@ -48,6 +48,7 @@
     "Wake": "Wake",
     "Primary": "Primary",
     "Identify": "Identify",
+    "Disconnected": "Disconnected",
     "OpenWindowsSettings": "Windows Display Settings…"
   }
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/display"
+	"github.com/valentderah/stream-deck-just-monitor-control/internal/inspector"
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/streamdeck"
 )
 
@@ -22,18 +23,26 @@ type refreshSettings struct {
 	MonitorID   string `json:"monitorId"`
 }
 
+func defaultRefreshSettings() refreshSettings {
+	return refreshSettings{Denominator: 1}
+}
+
+var refreshSchema = inspector.MustBuild(defaultRefreshSettings(),
+	inspector.MonitorField(),
+	inspector.RefreshRateField(),
+)
+
 func (a *RefreshRate) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
-	var s refreshSettings
-	_ = parseSettings(ev, &s)
+	s, err := decodeSettings(ev, refreshSchema, defaultRefreshSettings())
+	if err != nil {
+		_ = a.resp.ShowAlert(ev.Context)
+		return err
+	}
 	if s.MonitorID == "" || s.Numerator == 0 {
 		_ = a.resp.ShowAlert(ev.Context)
 		return display.ErrNoMonitorsSelected
 	}
-	den := s.Denominator
-	if den == 0 {
-		den = 1
-	}
-	rate := display.RefreshRate{Numerator: s.Numerator, Denominator: den}
+	rate := display.RefreshRate{Numerator: s.Numerator, Denominator: s.Denominator}
 	if err := a.mgr.SetRefreshRate(ctx, s.MonitorID, rate); err != nil {
 		_ = a.resp.ShowAlert(ev.Context)
 		return err
@@ -44,12 +53,12 @@ func (a *RefreshRate) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 
 func (a *RefreshRate) OnWillAppear(context.Context, streamdeck.Event) error { return nil }
 
-func (a *RefreshRate) OnPropertyInspectorDidAppear(ctx context.Context, ev streamdeck.Event) error {
-	return sendMonitorsPayload(ctx, a.mgr, a.resp, ev)
+func (a *RefreshRate) OnPropertyInspectorDidAppear(context.Context, streamdeck.Event) error {
+	return nil
 }
 
 func (a *RefreshRate) OnSendToPlugin(ctx context.Context, ev streamdeck.Event) error {
-	if HandleCommonPluginMessage(ctx, a.mgr, a.resp, ev) {
+	if HandleCommonPluginMessage(ctx, a.mgr, a.resp, ev, refreshSchema) {
 		return nil
 	}
 	msg, _ := parsePluginMessage(ev)

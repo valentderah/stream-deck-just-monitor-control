@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/display"
+	"github.com/valentderah/stream-deck-just-monitor-control/internal/inspector"
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/streamdeck"
 )
 
@@ -20,9 +21,18 @@ type hdrSettings struct {
 	MonitorIDs []string `json:"monitorIds"`
 }
 
+func defaultHDRSettings() hdrSettings {
+	return hdrSettings{}
+}
+
+var hdrSchema = inspector.MustBuild(defaultHDRSettings(), inspector.MonitorsField())
+
 func (a *HDR) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
-	var s hdrSettings
-	_ = parseSettings(ev, &s)
+	s, err := decodeSettings(ev, hdrSchema, defaultHDRSettings())
+	if err != nil {
+		_ = a.resp.ShowAlert(ev.Context)
+		return err
+	}
 	if len(s.MonitorIDs) == 0 {
 		_ = a.resp.ShowAlert(ev.Context)
 		return display.ErrNoMonitorsSelected
@@ -34,7 +44,7 @@ func (a *HDR) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 		wantOn = !on
 	}
 
-	err := forEachMonitorParallel(s.MonitorIDs, func(id string) error {
+	err = forEachMonitorParallel(s.MonitorIDs, func(id string) error {
 		return a.mgr.SetHDR(ctx, id, wantOn)
 	})
 	if err != nil {
@@ -52,8 +62,7 @@ func (a *HDR) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 }
 
 func (a *HDR) OnWillAppear(ctx context.Context, ev streamdeck.Event) error {
-	var s hdrSettings
-	_ = parseSettings(ev, &s)
+	s, _ := decodeSettings(ev, hdrSchema, defaultHDRSettings())
 	if len(s.MonitorIDs) == 0 {
 		return nil
 	}
@@ -67,11 +76,11 @@ func (a *HDR) OnWillAppear(ctx context.Context, ev streamdeck.Event) error {
 	return nil
 }
 
-func (a *HDR) OnPropertyInspectorDidAppear(ctx context.Context, ev streamdeck.Event) error {
-	return sendMonitorsPayload(ctx, a.mgr, a.resp, ev)
+func (a *HDR) OnPropertyInspectorDidAppear(context.Context, streamdeck.Event) error {
+	return nil
 }
 
 func (a *HDR) OnSendToPlugin(ctx context.Context, ev streamdeck.Event) error {
-	_ = HandleCommonPluginMessage(ctx, a.mgr, a.resp, ev)
+	_ = HandleCommonPluginMessage(ctx, a.mgr, a.resp, ev, hdrSchema)
 	return nil
 }

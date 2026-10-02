@@ -21,7 +21,7 @@ type Monitor struct {
 	Name        string   `json:"name"`
 	DisplayNum  int      `json:"displayNum"`
 	IsPrimary   bool     `json:"isPrimary"`
-	Inputs      []uint32 `json:"inputs,omitempty"`
+	Inputs      []InputPort `json:"inputs,omitempty"`
 	CurrentPort uint32   `json:"currentPort,omitempty"`
 	Brightness  uint32   `json:"brightness,omitempty"`
 }
