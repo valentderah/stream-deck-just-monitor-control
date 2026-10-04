@@ -1,0 +1,54 @@
+{
+  "Name": "Just Monitor Control",
+  "Description": "Plugin de Stream Deck para Windows. Controla el brillo del monitor, la entrada de vídeo, la frecuencia de actualización, HDR y la suspensión.",
+  "Category": "Just Monitor Control",
+  "com.valentderah.just-monitor-control.brightness": {
+    "Name": "Brillo",
+    "Tooltip": "Establecer un nivel exacto, subirlo o bajarlo por pasos o alternar entre dos estados guardados en varios monitores a la vez.",
+  },
+  "com.valentderah.just-monitor-control.input-switch": {
+    "Name": "Cambiar entrada",
+    "Tooltip": "Cambiar a un puerto concreto o entre dos.",
+  },
+  "com.valentderah.just-monitor-control.refresh-rate": {
+    "Name": "Cambiar la frecuencia de actualización",
+    "Tooltip": "Frecuencias de actualización que informa Windows, incluidos modos exactos como 59,94 Hz.",
+  },
+  "com.valentderah.just-monitor-control.hdr": {
+    "Name": "HDR",
+    "Tooltip": "Activar o desactivar HDR en los monitores seleccionados."
+  },
+  "com.valentderah.just-monitor-control.sleep": {
+    "Name": "Suspender",
+    "Tooltip": "Suspender los monitores seleccionados o todo el escritorio y despertarlos de nuevo.",
+  },
+  "com.valentderah.just-monitor-control.raw-vcp": {
+    "Name": "Raw VCP",
+    "Tooltip": "Enviar un código VCP por DDC/CI."
+  },
+  "Localization": {
+    "Monitors": "Monitores",
+    "Mode": "Modo",
+    "Loading": "Cargando…",
+    "Set": "Establecer",
+    "Step": "Paso",
+    "Toggle": "Alternar",
+    "Value": "Valor",
+    "StepAmount": "Incremento",
+    "ToggleA": "Nivel A",
+    "ToggleB": "Nivel B",
+    "Direct": "Directo",
+    "Port": "Puerto",
+    "PortA": "Puerto A",
+    "PortB": "Puerto B",
+    "RefreshRate": "Frecuencia de actualización",
+    "VCPCode": "Código VCP",
+    "VCPValue": "Valor",
+    "Sleep": "Suspender",
+    "Wake": "Despertar",
+    "Primary": "Principal",
+    "Identify": "Identificar",
+    "Disconnected": "Desconectado",
+    "OpenWindowsSettings": "Configuración de pantalla de Windows…"
+  }
+}

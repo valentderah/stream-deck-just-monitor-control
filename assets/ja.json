@@ -1,0 +1,54 @@
+{
+  "Name": "Just Monitor Control",
+  "Description": "Windows 向けの Stream Deck プラグインです。モニターの明るさ、映像入力、リフレッシュレート、HDR、スリープを制御します。",
+  "Category": "Just Monitor Control",
+  "com.valentderah.just-monitor-control.brightness": {
+    "Name": "明るさ",
+    "Tooltip": "正確な明るさを指定したり、段階的に上下したり、保存した 2 つの状態を切り替えたりできます。複数のモニターに同時に適用できます。",
+  },
+  "com.valentderah.just-monitor-control.input-switch": {
+    "Name": "入力切替",
+    "Tooltip": "指定したポート、または 2 つのポートを切り替えます。",
+  },
+  "com.valentderah.just-monitor-control.refresh-rate": {
+    "Name": "リフレッシュレートの変更",
+    "Tooltip": "Windows が報告するリフレッシュレートです。59.94 Hz などの正確なモードを含みます。",
+  },
+  "com.valentderah.just-monitor-control.hdr": {
+    "Name": "HDR",
+    "Tooltip": "選択したモニターの HDR を切り替えます。"
+  },
+  "com.valentderah.just-monitor-control.sleep": {
+    "Name": "スリープ",
+    "Tooltip": "選択したモニターまたはデスクトップ全体をスリープにして、再び解除します。",
+  },
+  "com.valentderah.just-monitor-control.raw-vcp": {
+    "Name": "Raw VCP",
+    "Tooltip": "DDC/CI で VCP コードを送信します。"
+  },
+  "Localization": {
+    "Monitors": "モニター",
+    "Mode": "モード",
+    "Loading": "読み込み中…",
+    "Set": "指定",
+    "Step": "ステップ",
+    "Toggle": "切り替え",
+    "Value": "値",
+    "StepAmount": "ステップ幅",
+    "ToggleA": "レベル A",
+    "ToggleB": "レベル B",
+    "Direct": "直接",
+    "Port": "ポート",
+    "PortA": "ポート A",
+    "PortB": "ポート B",
+    "RefreshRate": "リフレッシュレート",
+    "VCPCode": "VCP コード",
+    "VCPValue": "値",
+    "Sleep": "スリープ",
+    "Wake": "スリープ解除",
+    "Primary": "メイン",
+    "Identify": "識別",
+    "Disconnected": "未接続",
+    "OpenWindowsSettings": "Windows のディスプレイ設定…"
+  }
+}

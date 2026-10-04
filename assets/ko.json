@@ -1,0 +1,54 @@
+{
+  "Name": "Just Monitor Control",
+  "Description": "Windows용 Stream Deck 플러그인입니다. 모니터 밝기, 영상 입력, 주사율, HDR, 절전을 제어합니다.",
+  "Category": "Just Monitor Control",
+  "com.valentderah.just-monitor-control.brightness": {
+    "Name": "밝기",
+    "Tooltip": "정확한 밝기를 지정하거나, 단계로 올리거나 내리거나, 저장된 두 상태 사이를 전환할 수 있습니다. 여러 모니터에 동시에 적용됩니다.",
+  },
+  "com.valentderah.just-monitor-control.input-switch": {
+    "Name": "입력 전환",
+    "Tooltip": "지정한 포트로 전환하거나 두 포트 사이를 전환합니다.",
+  },
+  "com.valentderah.just-monitor-control.refresh-rate": {
+    "Name": "주사율 변경",
+    "Tooltip": "Windows가 보고하는 주사율입니다. 59.94 Hz 같은 정확한 모드를 포함합니다.",
+  },
+  "com.valentderah.just-monitor-control.hdr": {
+    "Name": "HDR",
+    "Tooltip": "선택한 모니터의 HDR을 켜거나 끕니다."
+  },
+  "com.valentderah.just-monitor-control.sleep": {
+    "Name": "절전",
+    "Tooltip": "선택한 모니터나 바탕 화면 전체를 절전으로 전환한 뒤 다시 깨웁니다.",
+  },
+  "com.valentderah.just-monitor-control.raw-vcp": {
+    "Name": "Raw VCP",
+    "Tooltip": "DDC/CI로 VCP 코드를 보냅니다."
+  },
+  "Localization": {
+    "Monitors": "모니터",
+    "Mode": "모드",
+    "Loading": "불러오는 중…",
+    "Set": "지정",
+    "Step": "단계",
+    "Toggle": "전환",
+    "Value": "값",
+    "StepAmount": "단계 크기",
+    "ToggleA": "수준 A",
+    "ToggleB": "수준 B",
+    "Direct": "직접",
+    "Port": "포트",
+    "PortA": "포트 A",
+    "PortB": "포트 B",
+    "RefreshRate": "주사율",
+    "VCPCode": "VCP 코드",
+    "VCPValue": "값",
+    "Sleep": "절전",
+    "Wake": "깨우기",
+    "Primary": "주",
+    "Identify": "식별",
+    "Disconnected": "연결 끊김",
+    "OpenWindowsSettings": "Windows 디스플레이 설정…"
+  }
+}

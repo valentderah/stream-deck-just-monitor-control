@@ -1,0 +1,54 @@
+{
+  "Name": "Just Monitor Control",
+  "Description": "适用于 Windows 的 Stream Deck 插件。可控制显示器亮度、视频输入、刷新率、HDR 和睡眠。",
+  "Category": "Just Monitor Control",
+  "com.valentderah.just-monitor-control.brightness": {
+    "Name": "亮度",
+    "Tooltip": "可以设定精确亮度、按步进增减，或在两个已保存的状态之间切换，同时用于多台显示器。",
+  },
+  "com.valentderah.just-monitor-control.input-switch": {
+    "Name": "切换输入",
+    "Tooltip": "切换到指定端口，或在两个端口之间切换。",
+  },
+  "com.valentderah.just-monitor-control.refresh-rate": {
+    "Name": "更改刷新率",
+    "Tooltip": "Windows 报告的刷新率，包括 59.94 Hz 这类精确模式。",
+  },
+  "com.valentderah.just-monitor-control.hdr": {
+    "Name": "HDR",
+    "Tooltip": "在所选显示器上开启或关闭 HDR。"
+  },
+  "com.valentderah.just-monitor-control.sleep": {
+    "Name": "睡眠",
+    "Tooltip": "让所选显示器或整个桌面进入睡眠，然后再唤醒。",
+  },
+  "com.valentderah.just-monitor-control.raw-vcp": {
+    "Name": "Raw VCP",
+    "Tooltip": "通过 DDC/CI 发送 VCP 代码。"
+  },
+  "Localization": {
+    "Monitors": "显示器",
+    "Mode": "模式",
+    "Loading": "正在加载…",
+    "Set": "设定",
+    "Step": "步进",
+    "Toggle": "切换",
+    "Value": "数值",
+    "StepAmount": "步长",
+    "ToggleA": "级别 A",
+    "ToggleB": "级别 B",
+    "Direct": "直接",
+    "Port": "端口",
+    "PortA": "端口 A",
+    "PortB": "端口 B",
+    "RefreshRate": "刷新率",
+    "VCPCode": "VCP 代码",
+    "VCPValue": "数值",
+    "Sleep": "睡眠",
+    "Wake": "唤醒",
+    "Primary": "主",
+    "Identify": "识别",
+    "Disconnected": "已断开",
+    "OpenWindowsSettings": "Windows 显示设置…"
+  }
+}

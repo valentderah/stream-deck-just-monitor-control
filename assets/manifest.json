@@ -7,7 +7,7 @@
       "Name": "Brightness",
       "UUID": "com.valentderah.just-monitor-control.brightness",
       "Icon": "imgs/actions/list/brightness",
-      "Tooltip": "Set, step, or toggle monitor brightness.",
+      "Tooltip": "Set an exact level, step it up or down, or switch between two saved states on several monitors at once.",
       "PropertyInspectorPath": "ui/inspector.html",
       "Controllers": ["Keypad"],
       "States": [{ "Image": "imgs/actions/brightness", "TitleAlignment": "bottom" }]
@@ -16,7 +16,7 @@
       "Name": "Input Switch",
       "UUID": "com.valentderah.just-monitor-control.input-switch",
       "Icon": "imgs/actions/list/input",
-      "Tooltip": "Switch monitor input port.",
+      "Tooltip": "Switch to a specific port, or between two.",
       "PropertyInspectorPath": "ui/inspector.html",
       "Controllers": ["Keypad"],
       "States": [
@@ -25,10 +25,10 @@
       ]
     },
     {
-      "Name": "Refresh Rate",
+      "Name": "Refresh Rate Change",
       "UUID": "com.valentderah.just-monitor-control.refresh-rate",
       "Icon": "imgs/actions/list/refresh",
-      "Tooltip": "Change display refresh rate.",
+      "Tooltip": "Refresh rates reported by Windows, including exact modes such as 59.94 Hz.",
       "PropertyInspectorPath": "ui/inspector.html",
       "Controllers": ["Keypad"],
       "States": [{ "Image": "imgs/actions/refresh", "TitleAlignment": "bottom" }]
@@ -49,7 +49,7 @@
       "Name": "Sleep",
       "UUID": "com.valentderah.just-monitor-control.sleep",
       "Icon": "imgs/actions/list/sleep",
-      "Tooltip": "Sleep or wake monitors.",
+      "Tooltip": "Sleep selected monitors or the whole desktop, then wake them again.",
       "PropertyInspectorPath": "ui/inspector.html",
       "Controllers": ["Keypad"],
       "States": [
@@ -70,7 +70,7 @@
   "Category": "Just Monitor Control",
   "CategoryIcon": "imgs/plugin/category-icon",
   "CodePath": "bin/plugin.exe",
-  "Description": "Control monitor brightness, input, refresh rate, HDR, sleep, and raw VCP from Stream Deck.",
+  "Description": "A Stream Deck plugin for Windows. It controls monitor brightness, video input, refresh rate, HDR, and sleep.",
   "Icon": "imgs/plugin/marketplace",
   "SDKVersion": 3,
   "Software": { "MinimumVersion": "6.9" },

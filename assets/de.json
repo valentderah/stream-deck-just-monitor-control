@@ -1,0 +1,54 @@
+{
+  "Name": "Just Monitor Control",
+  "Description": "Stream Deck-Plugin für Windows. Steuert Monitorhelligkeit, Videoeingang, Bildwiederholfrequenz, HDR und Standby.",
+  "Category": "Just Monitor Control",
+  "com.valentderah.just-monitor-control.brightness": {
+    "Name": "Helligkeit",
+    "Tooltip": "Genaue Stufe festlegen, schrittweise nach oben oder unten ändern oder zwischen zwei gespeicherten Zuständen umschalten, auf mehreren Monitoren gleichzeitig.",
+  },
+  "com.valentderah.just-monitor-control.input-switch": {
+    "Name": "Eingang wechseln",
+    "Tooltip": "Auf einen bestimmten Anschluss oder zwischen zwei Anschlüssen wechseln.",
+  },
+  "com.valentderah.just-monitor-control.refresh-rate": {
+    "Name": "Bildwiederholfrequenz ändern",
+    "Tooltip": "Bildwiederholfrequenzen, die Windows meldet, einschließlich genauer Modi wie 59,94 Hz.",
+  },
+  "com.valentderah.just-monitor-control.hdr": {
+    "Name": "HDR",
+    "Tooltip": "HDR für ausgewählte Monitore umschalten."
+  },
+  "com.valentderah.just-monitor-control.sleep": {
+    "Name": "Standby",
+    "Tooltip": "Ausgewählte Monitore oder den gesamten Desktop in den Standby versetzen und danach aufwecken.",
+  },
+  "com.valentderah.just-monitor-control.raw-vcp": {
+    "Name": "Raw VCP",
+    "Tooltip": "Einen VCP-Code per DDC/CI senden."
+  },
+  "Localization": {
+    "Monitors": "Monitore",
+    "Mode": "Modus",
+    "Loading": "Wird geladen…",
+    "Set": "Festlegen",
+    "Step": "Schritt",
+    "Toggle": "Umschalten",
+    "Value": "Wert",
+    "StepAmount": "Schrittweite",
+    "ToggleA": "Stufe A",
+    "ToggleB": "Stufe B",
+    "Direct": "Direkt",
+    "Port": "Anschluss",
+    "PortA": "Anschluss A",
+    "PortB": "Anschluss B",
+    "RefreshRate": "Bildwiederholfrequenz",
+    "VCPCode": "VCP-Code",
+    "VCPValue": "Wert",
+    "Sleep": "Standby",
+    "Wake": "Aufwecken",
+    "Primary": "Haupt",
+    "Identify": "Identifizieren",
+    "Disconnected": "Getrennt",
+    "OpenWindowsSettings": "Windows-Anzeigeeinstellungen…"
+  }
+}

@@ -1,18 +1,18 @@
 {
   "Name": "Just Monitor Control",
-  "Description": "Control monitor brightness, input, refresh rate, HDR, sleep, and raw VCP from Stream Deck.",
+  "Description": "A Stream Deck plugin for Windows. It controls monitor brightness, video input, refresh rate, HDR, and sleep.",
   "Category": "Just Monitor Control",
   "com.valentderah.just-monitor-control.brightness": {
     "Name": "Brightness",
-    "Tooltip": "Set, step, or toggle monitor brightness."
+    "Tooltip": "Set an exact level, step it up or down, or switch between two saved states on several monitors at once."
   },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "Input Switch",
-    "Tooltip": "Switch monitor input port."
+    "Tooltip": "Switch to a specific port, or between two."
   },
   "com.valentderah.just-monitor-control.refresh-rate": {
-    "Name": "Refresh Rate",
-    "Tooltip": "Change display refresh rate."
+    "Name": "Refresh Rate Change",
+    "Tooltip": "Refresh rates reported by Windows, including exact modes such as 59.94 Hz."
   },
   "com.valentderah.just-monitor-control.hdr": {
     "Name": "HDR",
@@ -20,7 +20,7 @@
   },
   "com.valentderah.just-monitor-control.sleep": {
     "Name": "Sleep",
-    "Tooltip": "Sleep or wake monitors."
+    "Tooltip": "Sleep selected monitors or the whole desktop, then wake them again."
   },
   "com.valentderah.just-monitor-control.raw-vcp": {
     "Name": "Raw VCP",

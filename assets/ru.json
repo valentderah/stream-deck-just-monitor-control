@@ -1,0 +1,54 @@
+{
+  "Name": "Just Monitor Control",
+  "Description": "Плагин Stream Deck для Windows. Управляет яркостью монитора, видеовходом, частотой обновления, HDR и сном.",
+  "Category": "Just Monitor Control",
+  "com.valentderah.just-monitor-control.brightness": {
+    "Name": "Яркость",
+    "Tooltip": "Задать точный уровень, шаг вверх или вниз или переключиться между двумя сохранёнными состояниями сразу на нескольких мониторах."
+  },
+  "com.valentderah.just-monitor-control.input-switch": {
+    "Name": "Переключение входа",
+    "Tooltip": "Переключиться на выбранный порт или между двумя."
+  },
+  "com.valentderah.just-monitor-control.refresh-rate": {
+    "Name": "Изменение частоты обновления",
+    "Tooltip": "Частоты, которые сообщает Windows, включая точные режимы вроде 59,94 Гц."
+  },
+  "com.valentderah.just-monitor-control.hdr": {
+    "Name": "HDR",
+    "Tooltip": "Включить или выключить HDR на выбранных мониторах."
+  },
+  "com.valentderah.just-monitor-control.sleep": {
+    "Name": "Сон",
+    "Tooltip": "Усыпить выбранные мониторы или весь рабочий стол, а затем разбудить."
+  },
+  "com.valentderah.just-monitor-control.raw-vcp": {
+    "Name": "Raw VCP",
+    "Tooltip": "Отправить код VCP по DDC/CI."
+  },
+  "Localization": {
+    "Monitors": "Мониторы",
+    "Mode": "Режим",
+    "Loading": "Загружается…",
+    "Set": "Задать",
+    "Step": "Шаг",
+    "Toggle": "Переключение",
+    "Value": "Значение",
+    "StepAmount": "Величина шага",
+    "ToggleA": "Уровень A",
+    "ToggleB": "Уровень B",
+    "Direct": "Прямой",
+    "Port": "Порт",
+    "PortA": "Порт A",
+    "PortB": "Порт B",
+    "RefreshRate": "Частота обновления",
+    "VCPCode": "Код VCP",
+    "VCPValue": "Значение",
+    "Sleep": "Сон",
+    "Wake": "Пробуждение",
+    "Primary": "Основной",
+    "Identify": "Опознать",
+    "Disconnected": "Отключён",
+    "OpenWindowsSettings": "Параметры экрана Windows…"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "Name": "Just Monitor Control",
+  "Description": "Plugin Stream Deck pour Windows. Contrôle la luminosité du moniteur, l'entrée vidéo, la fréquence de rafraîchissement, le HDR et la veille.",
+  "Category": "Just Monitor Control",
+  "com.valentderah.just-monitor-control.brightness": {
+    "Name": "Luminosité",
+    "Tooltip": "Définir un niveau exact, le monter ou le baisser par pas ou basculer entre deux états enregistrés, sur plusieurs moniteurs à la fois.",
+  },
+  "com.valentderah.just-monitor-control.input-switch": {
+    "Name": "Changer d'entrée",
+    "Tooltip": "Passer sur un port précis ou basculer entre deux.",
+  },
+  "com.valentderah.just-monitor-control.refresh-rate": {
+    "Name": "Modification de la fréquence de rafraîchissement",
+    "Tooltip": "Fréquences de rafraîchissement signalées par Windows, y compris les modes exacts tels que 59,94 Hz.",
+  },
+  "com.valentderah.just-monitor-control.hdr": {
+    "Name": "HDR",
+    "Tooltip": "Activer ou désactiver le HDR sur les moniteurs sélectionnés."
+  },
+  "com.valentderah.just-monitor-control.sleep": {
+    "Name": "Veille",
+    "Tooltip": "Mettre en veille les moniteurs sélectionnés ou tout le bureau, puis les réveiller.",
+  },
+  "com.valentderah.just-monitor-control.raw-vcp": {
+    "Name": "Raw VCP",
+    "Tooltip": "Envoyer un code VCP en DDC/CI."
+  },
+  "Localization": {
+    "Monitors": "Moniteurs",
+    "Mode": "Mode",
+    "Loading": "Chargement…",
+    "Set": "Définir",
+    "Step": "Pas",
+    "Toggle": "Basculer",
+    "Value": "Valeur",
+    "StepAmount": "Incrément",
+    "ToggleA": "Niveau A",
+    "ToggleB": "Niveau B",
+    "Direct": "Direct",
+    "Port": "Port",
+    "PortA": "Port A",
+    "PortB": "Port B",
+    "RefreshRate": "Fréquence de rafraîchissement",
+    "VCPCode": "Code VCP",
+    "VCPValue": "Valeur",
+    "Sleep": "Veille",
+    "Wake": "Réveiller",
+    "Primary": "Principal",
+    "Identify": "Identifier",
+    "Disconnected": "Déconnecté",
+    "OpenWindowsSettings": "Paramètres d'affichage Windows…"
+  }
+}
