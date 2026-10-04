@@ -1,6 +1,6 @@
 {
   "Name": "Just Monitor Control",
-  "Version": "0.9.2.0",
+  "Version": "0.9.5.0",
   "Author": "Valiantsin Dzerakh",
   "Actions": [
     {
@@ -70,7 +70,7 @@
   "Category": "Just Monitor Control",
   "CategoryIcon": "imgs/plugin/category-icon",
   "CodePath": "bin/plugin.exe",
-  "Description": "A Stream Deck plugin for Windows. It controls monitor brightness, video input, refresh rate, HDR, and sleep.",
+  "Description": "Just set brightness, switch video input, change refresh rate, toggle HDR, or put monitors to sleep directly from Stream Deck",
   "Icon": "imgs/plugin/marketplace",
   "SDKVersion": 3,
   "Software": { "MinimumVersion": "6.9" },
