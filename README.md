@@ -2,6 +2,8 @@ English | [Русский](README.ru.md) | [简体中文](README.zh-CN.md)
 
 # Just Monitor Control
 
+<img alt="Just Monitor Control" src="assets/cover.jpg" />
+
 A Stream Deck plugin for Windows. It controls monitor brightness, video input, refresh rate, HDR, and sleep.
 
 ## Features
