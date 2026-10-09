@@ -6,6 +6,14 @@
     "Name": "明るさ",
     "Tooltip": "正確な明るさを指定したり、段階的に上下したり、保存した 2 つの状態を切り替えたりできます。複数のモニターに同時に適用できます。",
   },
+  "com.valentderah.just-monitor-control.contrast": {
+    "Name": "コントラスト",
+    "Tooltip": "正確なコントラストを指定したり、段階的に上下したり、保存した 2 つのレベルを切り替えたりできます。複数のモニターに同時に適用できます。",
+  },
+  "com.valentderah.just-monitor-control.volume": {
+    "Name": "モニターの音量",
+    "Tooltip": "モニター内蔵スピーカーの音量を指定、段階的に変更、またはミュートします。Windows の音量ではありません。"
+  },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "入力切替",
     "Tooltip": "指定したポート、または 2 つのポートを切り替えます。",
@@ -33,6 +41,7 @@
     "Set": "指定",
     "Step": "ステップ",
     "Toggle": "切り替え",
+    "Mute": "ミュート",
     "Value": "値",
     "StepAmount": "ステップ幅",
     "ToggleA": "レベル A",

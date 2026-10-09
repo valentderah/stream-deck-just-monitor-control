@@ -54,6 +54,8 @@ func main() {
 
 	r := streamdeck.NewRouter()
 	r.Register("com.valentderah.just-monitor-control.brightness", actions.NewBrightness(mgr, client))
+	r.Register("com.valentderah.just-monitor-control.contrast", actions.NewContrast(mgr, client))
+	r.Register("com.valentderah.just-monitor-control.volume", actions.NewVolume(mgr, client))
 	r.Register("com.valentderah.just-monitor-control.input-switch", actions.NewInputSwitch(mgr, client))
 	r.Register("com.valentderah.just-monitor-control.refresh-rate", actions.NewRefreshRate(mgr, client))
 	r.Register("com.valentderah.just-monitor-control.hdr", actions.NewHDR(mgr, client))

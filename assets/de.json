@@ -6,6 +6,14 @@
     "Name": "Helligkeit",
     "Tooltip": "Genaue Stufe festlegen, schrittweise nach oben oder unten ändern oder zwischen zwei gespeicherten Zuständen umschalten, auf mehreren Monitoren gleichzeitig.",
   },
+  "com.valentderah.just-monitor-control.contrast": {
+    "Name": "Kontrast",
+    "Tooltip": "Genauen Kontrast festlegen, schrittweise nach oben oder unten ändern oder zwischen zwei gespeicherten Stufen umschalten, auf mehreren Monitoren gleichzeitig.",
+  },
+  "com.valentderah.just-monitor-control.volume": {
+    "Name": "Monitorlautstärke",
+    "Tooltip": "Lautstärke der Monitorlautsprecher festlegen, schrittweise ändern oder stummschalten. Das ist nicht die Windows-Lautstärke."
+  },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "Eingang wechseln",
     "Tooltip": "Auf einen bestimmten Anschluss oder zwischen zwei Anschlüssen wechseln.",
@@ -33,6 +41,7 @@
     "Set": "Festlegen",
     "Step": "Schritt",
     "Toggle": "Umschalten",
+    "Mute": "Stumm",
     "Value": "Wert",
     "StepAmount": "Schrittweite",
     "ToggleA": "Stufe A",

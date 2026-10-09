@@ -1,6 +1,6 @@
 {
   "Name": "Just Monitor Control",
-  "Version": "1.0.0.0",
+  "Version": "1.1.1.0",
   "Author": "Valiantsin Dzerakh",
   "Actions": [
     {
@@ -11,6 +11,28 @@
       "PropertyInspectorPath": "ui/inspector.html",
       "Controllers": ["Keypad"],
       "States": [{ "Image": "imgs/actions/brightness", "TitleAlignment": "bottom" }]
+    },
+    {
+      "Name": "Contrast",
+      "UUID": "com.valentderah.just-monitor-control.contrast",
+      "Icon": "imgs/actions/list/contrast",
+      "Tooltip": "Set an exact contrast level, step it up or down, or switch between two saved levels on several monitors at once.",
+      "PropertyInspectorPath": "ui/inspector.html",
+      "Controllers": ["Keypad"],
+      "States": [{ "Image": "imgs/actions/contrast", "TitleAlignment": "bottom" }]
+    },
+    {
+      "Name": "Monitor Volume",
+      "UUID": "com.valentderah.just-monitor-control.volume",
+      "Icon": "imgs/actions/list/volume",
+      "Tooltip": "Set, step, or mute the volume of the monitor's own speakers. This is not the Windows volume.",
+      "PropertyInspectorPath": "ui/inspector.html",
+      "Controllers": ["Keypad"],
+      "DisableAutomaticStates": true,
+      "States": [
+        { "Image": "imgs/actions/volume", "TitleAlignment": "bottom" },
+        { "Image": "imgs/actions/volume-muted", "TitleAlignment": "bottom" }
+      ]
     },
     {
       "Name": "Input Switch",

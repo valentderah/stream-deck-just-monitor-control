@@ -6,6 +6,14 @@
     "Name": "Brillo",
     "Tooltip": "Establecer un nivel exacto, subirlo o bajarlo por pasos o alternar entre dos estados guardados en varios monitores a la vez.",
   },
+  "com.valentderah.just-monitor-control.contrast": {
+    "Name": "Contraste",
+    "Tooltip": "Establecer un contraste exacto, subirlo o bajarlo por pasos o alternar entre dos niveles guardados en varios monitores a la vez.",
+  },
+  "com.valentderah.just-monitor-control.volume": {
+    "Name": "Volumen del monitor",
+    "Tooltip": "Establecer, cambiar por pasos o silenciar el volumen de los altavoces del monitor. No es el volumen de Windows."
+  },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "Cambiar entrada",
     "Tooltip": "Cambiar a un puerto concreto o entre dos.",
@@ -33,6 +41,7 @@
     "Set": "Establecer",
     "Step": "Paso",
     "Toggle": "Alternar",
+    "Mute": "Silenciar",
     "Value": "Valor",
     "StepAmount": "Incremento",
     "ToggleA": "Nivel A",

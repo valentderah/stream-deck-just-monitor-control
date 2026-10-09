@@ -6,6 +6,14 @@
     "Name": "Brightness",
     "Tooltip": "Set an exact level, step it up or down, or switch between two saved states on several monitors at once."
   },
+  "com.valentderah.just-monitor-control.contrast": {
+    "Name": "Contrast",
+    "Tooltip": "Set an exact contrast level, step it up or down, or switch between two saved levels on several monitors at once."
+  },
+  "com.valentderah.just-monitor-control.volume": {
+    "Name": "Monitor Volume",
+    "Tooltip": "Set, step, or mute the volume of the monitor's own speakers. This is not the Windows volume."
+  },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "Input Switch",
     "Tooltip": "Switch to a specific port, or between two."
@@ -33,6 +41,7 @@
     "Set": "Set",
     "Step": "Step",
     "Toggle": "Toggle",
+    "Mute": "Mute",
     "Value": "Value",
     "StepAmount": "Step",
     "ToggleA": "Level A",

@@ -6,6 +6,14 @@
     "Name": "밝기",
     "Tooltip": "정확한 밝기를 지정하거나, 단계로 올리거나 내리거나, 저장된 두 상태 사이를 전환할 수 있습니다. 여러 모니터에 동시에 적용됩니다.",
   },
+  "com.valentderah.just-monitor-control.contrast": {
+    "Name": "대비",
+    "Tooltip": "정확한 대비를 지정하거나, 단계로 올리거나 내리거나, 저장된 두 레벨 사이를 전환할 수 있습니다. 여러 모니터에 동시에 적용됩니다.",
+  },
+  "com.valentderah.just-monitor-control.volume": {
+    "Name": "모니터 음량",
+    "Tooltip": "모니터 내장 스피커의 음량을 지정하거나, 단계로 조절하거나, 음소거합니다. Windows 음량이 아닙니다."
+  },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "입력 전환",
     "Tooltip": "지정한 포트로 전환하거나 두 포트 사이를 전환합니다.",
@@ -33,6 +41,7 @@
     "Set": "지정",
     "Step": "단계",
     "Toggle": "전환",
+    "Mute": "음소거",
     "Value": "값",
     "StepAmount": "단계 크기",
     "ToggleA": "수준 A",

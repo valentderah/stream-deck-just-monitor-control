@@ -6,6 +6,14 @@
     "Name": "Luminosité",
     "Tooltip": "Définir un niveau exact, le monter ou le baisser par pas ou basculer entre deux états enregistrés, sur plusieurs moniteurs à la fois.",
   },
+  "com.valentderah.just-monitor-control.contrast": {
+    "Name": "Contraste",
+    "Tooltip": "Définir un contraste exact, le monter ou le baisser par pas ou basculer entre deux niveaux enregistrés, sur plusieurs moniteurs à la fois.",
+  },
+  "com.valentderah.just-monitor-control.volume": {
+    "Name": "Volume du moniteur",
+    "Tooltip": "Définir, modifier par pas ou couper le volume des haut-parleurs du moniteur. Ce n'est pas le volume de Windows."
+  },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "Changer d'entrée",
     "Tooltip": "Passer sur un port précis ou basculer entre deux.",
@@ -33,6 +41,7 @@
     "Set": "Définir",
     "Step": "Pas",
     "Toggle": "Basculer",
+    "Mute": "Muet",
     "Value": "Valeur",
     "StepAmount": "Incrément",
     "ToggleA": "Niveau A",

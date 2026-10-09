@@ -6,6 +6,14 @@
     "Name": "亮度",
     "Tooltip": "可以指定精確亮度、按步進增減，或在兩個已儲存的狀態之間切換，同時用於多台顯示器。",
   },
+  "com.valentderah.just-monitor-control.contrast": {
+    "Name": "對比",
+    "Tooltip": "可以指定精確對比、按步進增減，或在兩個已儲存的等級之間切換，同時用於多台顯示器。",
+  },
+  "com.valentderah.just-monitor-control.volume": {
+    "Name": "顯示器音量",
+    "Tooltip": "指定、按步進調整或靜音顯示器內建喇叭的音量。這不是 Windows 音量。"
+  },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "切換輸入",
     "Tooltip": "切換到指定連接埠，或在兩個連接埠之間切換。",
@@ -33,6 +41,7 @@
     "Set": "指定",
     "Step": "步進",
     "Toggle": "切換",
+    "Mute": "靜音",
     "Value": "數值",
     "StepAmount": "步長",
     "ToggleA": "等級 A",

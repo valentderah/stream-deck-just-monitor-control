@@ -62,6 +62,8 @@ func TestPropertyInspectorDidAppearSendsNothing(t *testing.T) {
 	mgr := &fakeManager{}
 	handlers := []streamdeck.ActionHandler{
 		NewBrightness(mgr, resp),
+		NewContrast(mgr, resp),
+		NewVolume(mgr, resp),
 		NewInputSwitch(mgr, resp),
 		NewRefreshRate(mgr, resp),
 		NewHDR(mgr, resp),
