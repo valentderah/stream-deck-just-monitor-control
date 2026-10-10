@@ -13,7 +13,7 @@ func defaultBrightnessSettings() levelSettings {
 }
 
 func defaultBrightnessDialSettings() levelSettings {
-	return levelSettings{Mode: LevelModeToggle, Value: 50, Step: 5, ToggleA: 20, ToggleB: 80}
+	return levelSettings{Mode: LevelModeToggle, Value: 50, Step: 2, ToggleA: 20, ToggleB: 80}
 }
 
 var (

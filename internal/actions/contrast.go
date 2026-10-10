@@ -9,7 +9,7 @@ func defaultContrastSettings() levelSettings {
 }
 
 func defaultContrastDialSettings() levelSettings {
-	return levelSettings{Mode: LevelModeToggle, Value: 50, Step: 5, ToggleA: 50, ToggleB: 75}
+	return levelSettings{Mode: LevelModeToggle, Value: 50, Step: 2, ToggleA: 50, ToggleB: 75}
 }
 
 var (
