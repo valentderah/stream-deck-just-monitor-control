@@ -1,6 +1,9 @@
 package display
 
-const VCPInputSource = 0x60
+const (
+	VCPBrightness  = 0x10
+	VCPInputSource = 0x60
+)
 
 // RefreshRate is a DXGI/DisplayConfig-style rational (e.g. 60000/1001 ≈ 59.94 Hz).
 type RefreshRate struct {
@@ -17,11 +20,9 @@ func (r RefreshRate) Hertz() float64 {
 }
 
 type Monitor struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	DisplayNum  int      `json:"displayNum"`
-	IsPrimary   bool     `json:"isPrimary"`
-	Inputs      []InputPort `json:"inputs,omitempty"`
-	CurrentPort uint32   `json:"currentPort,omitempty"`
-	Brightness  uint32   `json:"brightness,omitempty"`
+	ID         string      `json:"id"`
+	Name       string      `json:"name"`
+	DisplayNum int         `json:"displayNum"`
+	IsPrimary  bool        `json:"isPrimary"`
+	Inputs     []InputPort `json:"inputs,omitempty"`
 }

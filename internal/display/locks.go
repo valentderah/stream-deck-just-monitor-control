@@ -1,24 +1,36 @@
 package display
 
-import "sync"
+import (
+	"context"
+	"sync"
+)
 
 type IDLocks struct {
 	mu    sync.Mutex
-	locks map[string]*sync.Mutex
+	locks map[string]chan struct{}
 }
 
 func NewIDLocks() *IDLocks {
-	return &IDLocks{locks: make(map[string]*sync.Mutex)}
+	return &IDLocks{locks: make(map[string]chan struct{})}
 }
 
-func (l *IDLocks) Lock(id string) func() {
+// Lock gives up when ctx ends, so a holder stuck in a monitor call does not block later callers forever.
+func (l *IDLocks) Lock(ctx context.Context, id string) (unlock func(), err error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	l.mu.Lock()
-	m, ok := l.locks[id]
+	ch, ok := l.locks[id]
 	if !ok {
-		m = &sync.Mutex{}
-		l.locks[id] = m
+		ch = make(chan struct{}, 1)
+		l.locks[id] = ch
 	}
 	l.mu.Unlock()
-	m.Lock()
-	return m.Unlock
+
+	select {
+	case ch <- struct{}{}:
+		return func() { <-ch }, nil
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
 }
