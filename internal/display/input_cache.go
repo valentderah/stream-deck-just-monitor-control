@@ -24,13 +24,13 @@ func (c *InputCache) Inputs(ctx context.Context, monitorID string) ([]InputPort,
 	if ports, ok := c.cached(monitorID); ok {
 		return ports, nil
 	}
-	unlock := c.locks.Lock(monitorID)
+	unlock, err := c.locks.Lock(ctx, monitorID)
+	if err != nil {
+		return nil, err
+	}
 	defer unlock()
 	if ports, ok := c.cached(monitorID); ok {
 		return ports, nil
-	}
-	if err := ctx.Err(); err != nil {
-		return nil, err
 	}
 	caps, err := c.read(monitorID)
 	if err != nil {

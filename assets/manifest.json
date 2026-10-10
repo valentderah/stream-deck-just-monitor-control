@@ -1,6 +1,6 @@
 {
   "Name": "Just Monitor Control",
-  "Version": "1.0.0.0",
+  "Version": "1.1.5.0",
   "Author": "Valiantsin Dzerakh",
   "Actions": [
     {
@@ -9,8 +9,54 @@
       "Icon": "imgs/actions/list/brightness",
       "Tooltip": "Set an exact level, step it up or down, or switch between two saved states on several monitors at once.",
       "PropertyInspectorPath": "ui/inspector.html",
-      "Controllers": ["Keypad"],
+      "Controllers": ["Keypad", "Encoder"],
+      "Encoder": {
+        "layout": "$B1",
+        "TriggerDescription": {
+          "Rotate": "Adjust brightness",
+          "Push": "Set or toggle level",
+          "Touch": "Set or toggle level"
+        }
+      },
       "States": [{ "Image": "imgs/actions/brightness", "TitleAlignment": "bottom" }]
+    },
+    {
+      "Name": "Contrast",
+      "UUID": "com.valentderah.just-monitor-control.contrast",
+      "Icon": "imgs/actions/list/contrast",
+      "Tooltip": "Set an exact contrast level, step it up or down, or switch between two saved levels on several monitors at once.",
+      "PropertyInspectorPath": "ui/inspector.html",
+      "Controllers": ["Keypad", "Encoder"],
+      "Encoder": {
+        "layout": "$B1",
+        "TriggerDescription": {
+          "Rotate": "Adjust contrast",
+          "Push": "Set or toggle level",
+          "Touch": "Set or toggle level"
+        }
+      },
+      "States": [{ "Image": "imgs/actions/contrast", "TitleAlignment": "bottom" }]
+    },
+    {
+      "Name": "Monitor Volume",
+      "UUID": "com.valentderah.just-monitor-control.volume",
+      "Icon": "imgs/actions/list/volume",
+      "Tooltip": "Set, step, or mute the volume of the monitor's own speakers. This is not the Windows volume.",
+      "PropertyInspectorPath": "ui/inspector.html",
+      "Controllers": ["Keypad", "Encoder"],
+      "Encoder": {
+        "layout": "$B1",
+        "TriggerDescription": {
+          "Rotate": "Adjust volume",
+          "Push": "Mute, set or toggle level",
+          "Touch": "Mute, set or toggle level"
+        }
+      },
+      "DisableAutomaticStates": true,
+      "States": [
+        { "Image": "imgs/actions/volume", "TitleAlignment": "bottom" },
+        { "Image": "imgs/actions/volume-muted", "TitleAlignment": "bottom" }
+      ]
     },
     {
       "Name": "Input Switch",

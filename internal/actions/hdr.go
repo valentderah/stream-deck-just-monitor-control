@@ -9,12 +9,11 @@ import (
 )
 
 type HDR struct {
-	mgr  display.Manager
-	resp Responder
+	inspectorHost
 }
 
 func NewHDR(mgr display.Manager, resp Responder) *HDR {
-	return &HDR{mgr: mgr, resp: resp}
+	return &HDR{inspectorHost{mgr: mgr, resp: resp, schema: hdrSchema}}
 }
 
 type hdrSettings struct {
@@ -27,6 +26,13 @@ func defaultHDRSettings() hdrSettings {
 
 var hdrSchema = inspector.MustBuild(defaultHDRSettings(), inspector.MonitorsField())
 
+func hdrState(on bool) int {
+	if on {
+		return 1
+	}
+	return 0
+}
+
 func (a *HDR) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 	s, err := decodeSettings(ev, hdrSchema, defaultHDRSettings())
 	if err != nil {
@@ -38,7 +44,7 @@ func (a *HDR) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 		return display.ErrNoMonitorsSelected
 	}
 
-	// Sequential (backend also serializes DisplayConfig); flip relative to first readable state.
+	// Flip relative to the first monitor. When its state is unreadable, turn HDR on.
 	wantOn := true
 	if on, err := a.mgr.GetHDR(ctx, s.MonitorIDs[0]); err == nil {
 		wantOn = !on
@@ -52,11 +58,7 @@ func (a *HDR) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 		return err
 	}
 
-	if wantOn {
-		_ = a.resp.SetState(ev.Context, 1)
-	} else {
-		_ = a.resp.SetState(ev.Context, 0)
-	}
+	_ = a.resp.SetState(ev.Context, hdrState(wantOn))
 	_ = a.resp.ShowOk(ev.Context)
 	return nil
 }
@@ -66,21 +68,9 @@ func (a *HDR) OnWillAppear(ctx context.Context, ev streamdeck.Event) error {
 	if len(s.MonitorIDs) == 0 {
 		return nil
 	}
-	if on, err := a.mgr.GetHDR(ctx, s.MonitorIDs[0]); err == nil {
-		if on {
-			_ = a.resp.SetState(ev.Context, 1)
-		} else {
-			_ = a.resp.SetState(ev.Context, 0)
-		}
+	on, err := a.mgr.GetHDR(ctx, s.MonitorIDs[0])
+	if err != nil {
+		return err
 	}
-	return nil
-}
-
-func (a *HDR) OnPropertyInspectorDidAppear(context.Context, streamdeck.Event) error {
-	return nil
-}
-
-func (a *HDR) OnSendToPlugin(ctx context.Context, ev streamdeck.Event) error {
-	_ = HandleCommonPluginMessage(ctx, a.mgr, a.resp, ev, hdrSchema)
-	return nil
+	return a.resp.SetState(ev.Context, hdrState(on))
 }

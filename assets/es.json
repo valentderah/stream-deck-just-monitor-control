@@ -5,14 +5,43 @@
   "com.valentderah.just-monitor-control.brightness": {
     "Name": "Brillo",
     "Tooltip": "Establecer un nivel exacto, subirlo o bajarlo por pasos o alternar entre dos estados guardados en varios monitores a la vez.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "Ajustar el brillo",
+        "Push": "Establecer o alternar el nivel",
+        "Touch": "Establecer o alternar el nivel"
+      }
+    }
+  },
+  "com.valentderah.just-monitor-control.contrast": {
+    "Name": "Contraste",
+    "Tooltip": "Establecer un contraste exacto, subirlo o bajarlo por pasos o alternar entre dos niveles guardados en varios monitores a la vez.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "Ajustar el contraste",
+        "Push": "Establecer o alternar el nivel",
+        "Touch": "Establecer o alternar el nivel"
+      }
+    }
+  },
+  "com.valentderah.just-monitor-control.volume": {
+    "Name": "Volumen del monitor",
+    "Tooltip": "Establecer, cambiar por pasos o silenciar el volumen de los altavoces del monitor. No es el volumen de Windows.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "Ajustar el volumen",
+        "Push": "Silenciar, establecer o alternar el nivel",
+        "Touch": "Silenciar, establecer o alternar el nivel"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "Cambiar entrada",
-    "Tooltip": "Cambiar a un puerto concreto o entre dos.",
+    "Tooltip": "Cambiar a un puerto concreto o entre dos."
   },
   "com.valentderah.just-monitor-control.refresh-rate": {
     "Name": "Cambiar la frecuencia de actualización",
-    "Tooltip": "Frecuencias de actualización que informa Windows, incluidos modos exactos como 59,94 Hz.",
+    "Tooltip": "Frecuencias de actualización que informa Windows, incluidos modos exactos como 59,94 Hz."
   },
   "com.valentderah.just-monitor-control.hdr": {
     "Name": "HDR",
@@ -20,7 +49,7 @@
   },
   "com.valentderah.just-monitor-control.sleep": {
     "Name": "Suspender",
-    "Tooltip": "Suspender los monitores seleccionados o todo el escritorio y despertarlos de nuevo.",
+    "Tooltip": "Suspender los monitores seleccionados o todo el escritorio y despertarlos de nuevo."
   },
   "com.valentderah.just-monitor-control.raw-vcp": {
     "Name": "Raw VCP",
@@ -29,10 +58,12 @@
   "Localization": {
     "Monitors": "Monitores",
     "Mode": "Modo",
+    "PressAction": "Al pulsar",
     "Loading": "Cargando…",
     "Set": "Establecer",
     "Step": "Paso",
     "Toggle": "Alternar",
+    "Mute": "Silenciar",
     "Value": "Valor",
     "StepAmount": "Incremento",
     "ToggleA": "Nivel A",

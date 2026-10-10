@@ -5,6 +5,7 @@
   var websocket = null;
   var pluginUUID = null;
   var actionUUID = null;
+  var controller = "Keypad";
   var translations = {};
   var schema = null;
   var saved = {};
@@ -399,6 +400,7 @@
     var parsedActionInfo = JSON.parse(actionInfo);
     actionUUID = parsedActionInfo.action;
     saved = parsedActionInfo.payload.settings || {};
+    controller = parsedActionInfo.payload.controller || controller;
     var lang = (parsedInfo.application && parsedInfo.application.language) || "en";
 
     var ready = loadLocalization(lang).then(function (loaded) {
@@ -410,7 +412,8 @@
     websocket = new WebSocket("ws://127.0.0.1:" + port);
     websocket.onopen = function () {
       websocket.send(JSON.stringify({ event: event, uuid: uuid }));
-      sendToPlugin({ type: "get_inspector" });
+      // A dial is configured by a different schema than a key.
+      sendToPlugin({ type: "get_inspector", controller: controller });
     };
     websocket.onmessage = function (evt) {
       var data = JSON.parse(evt.data);

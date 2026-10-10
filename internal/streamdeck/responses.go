@@ -43,6 +43,16 @@ func (c *Client) SetSettings(context string, settings any) error {
 	return c.writeJSON(msg)
 }
 
+// SetFeedback updates the touch strip layout of an action on a dial.
+func (c *Client) SetFeedback(context string, payload any) error {
+	msg := map[string]any{
+		"event":   "setFeedback",
+		"context": context,
+		"payload": payload,
+	}
+	return c.writeJSON(msg)
+}
+
 func (c *Client) SendToPropertyInspector(context, action string, payload any) error {
 	msg := map[string]any{
 		"event":   "sendToPropertyInspector",

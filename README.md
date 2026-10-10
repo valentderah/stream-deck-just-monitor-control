@@ -2,7 +2,7 @@ English | [Русский](README.ru.md) | [简体中文](README.zh-CN.md)
 
 # Just Monitor Control
 
-A Stream Deck plugin for Windows. It controls monitor brightness, video input, refresh rate, HDR, and sleep.
+A Stream Deck plugin for Windows. It controls monitor brightness, contrast, speaker volume, video input, refresh rate, HDR, and sleep.
 
 <img alt="Just Monitor Control" src=".github/assets/cover.jpg" />
 
@@ -11,6 +11,8 @@ A Stream Deck plugin for Windows. It controls monitor brightness, video input, r
 | Action | Description |
 | --- | --- |
 | Brightness | Set an exact level, step it up or down, or switch between two saved states, on several monitors at once. |
+| Contrast | Set an exact contrast level, step it up or down, or switch between two saved levels. |
+| Monitor Volume | Set, step, or mute the volume of the monitor's own speakers. This is not the Windows volume. |
 | Input Switch | Switch to a specific port, or between two, for example DisplayPort and HDMI. |
 | Refresh Rate Change | Refresh rates reported by Windows, including exact modes such as 59.94 Hz. |
 | HDR | Turn HDR on or off for one monitor or for every selected monitor. |

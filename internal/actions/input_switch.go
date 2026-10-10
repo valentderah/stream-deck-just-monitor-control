@@ -71,12 +71,16 @@ func toggleTarget(current uint32, known bool, portA, portB uint32, state int) (t
 }
 
 type InputSwitch struct {
-	mgr  display.Manager
-	resp Responder
+	inspectorHost
 }
 
 func NewInputSwitch(mgr display.Manager, resp Responder) *InputSwitch {
-	return &InputSwitch{mgr: mgr, resp: resp}
+	return &InputSwitch{inspectorHost{mgr: mgr, resp: resp, schema: inputSchema}}
+}
+
+func (a *InputSwitch) inputSource(ctx context.Context, monitorID string) (uint32, error) {
+	current, _, err := a.mgr.GetVCP(ctx, monitorID, display.VCPInputSource)
+	return current, err
 }
 
 type InputMode string
@@ -140,7 +144,7 @@ func (a *InputSwitch) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 	var nextState int
 	switch s.Mode {
 	case InputModeToggle:
-		cur, err := a.mgr.GetInputSource(ctx, s.MonitorID)
+		cur, err := a.inputSource(ctx, s.MonitorID)
 		target, previous, nextState = toggleTarget(cur, err == nil, s.PortA, s.PortB, s.CurrentState)
 	case InputModeDirect:
 		target = s.Port
@@ -150,14 +154,14 @@ func (a *InputSwitch) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 		return errInvalidMode
 	}
 
-	if err := a.mgr.SetInputSource(ctx, s.MonitorID, target); err != nil {
+	if err := a.mgr.SetVCP(ctx, s.MonitorID, display.VCPInputSource, target); err != nil {
 		_ = a.resp.ShowAlert(ev.Context)
 		return err
 	}
 
 	if s.Mode == InputModeToggle {
 		err := waitForInputSource(ctx, target, previous, inputConfirmationAttempts, inputConfirmationDelay, func(ctx context.Context) (uint32, error) {
-			return a.mgr.GetInputSource(ctx, s.MonitorID)
+			return a.inputSource(ctx, s.MonitorID)
 		})
 		if err != nil {
 			_ = a.resp.ShowAlert(ev.Context)
@@ -178,15 +182,5 @@ func (a *InputSwitch) OnWillAppear(ctx context.Context, ev streamdeck.Event) err
 	if s.MonitorID == "" || s.Mode != InputModeToggle {
 		return nil
 	}
-	_ = a.resp.SetState(ev.Context, s.CurrentState)
-	return nil
-}
-
-func (a *InputSwitch) OnPropertyInspectorDidAppear(context.Context, streamdeck.Event) error {
-	return nil
-}
-
-func (a *InputSwitch) OnSendToPlugin(ctx context.Context, ev streamdeck.Event) error {
-	_ = HandleCommonPluginMessage(ctx, a.mgr, a.resp, ev, inputSchema)
-	return nil
+	return a.resp.SetState(ev.Context, s.CurrentState)
 }

@@ -9,12 +9,11 @@ import (
 )
 
 type RawVCP struct {
-	mgr  display.Manager
-	resp Responder
+	inspectorHost
 }
 
 func NewRawVCP(mgr display.Manager, resp Responder) *RawVCP {
-	return &RawVCP{mgr: mgr, resp: resp}
+	return &RawVCP{inspectorHost{mgr: mgr, resp: resp, schema: rawVCPSchema}}
 }
 
 type rawVCPSettings struct {
@@ -48,16 +47,5 @@ func (a *RawVCP) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 		return err
 	}
 	_ = a.resp.ShowOk(ev.Context)
-	return nil
-}
-
-func (a *RawVCP) OnWillAppear(context.Context, streamdeck.Event) error { return nil }
-
-func (a *RawVCP) OnPropertyInspectorDidAppear(context.Context, streamdeck.Event) error {
-	return nil
-}
-
-func (a *RawVCP) OnSendToPlugin(ctx context.Context, ev streamdeck.Event) error {
-	_ = HandleCommonPluginMessage(ctx, a.mgr, a.resp, ev, rawVCPSchema)
 	return nil
 }

@@ -5,14 +5,43 @@
   "com.valentderah.just-monitor-control.brightness": {
     "Name": "明るさ",
     "Tooltip": "正確な明るさを指定したり、段階的に上下したり、保存した 2 つの状態を切り替えたりできます。複数のモニターに同時に適用できます。",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "明るさを調整",
+        "Push": "レベルを指定または切り替え",
+        "Touch": "レベルを指定または切り替え"
+      }
+    }
+  },
+  "com.valentderah.just-monitor-control.contrast": {
+    "Name": "コントラスト",
+    "Tooltip": "正確なコントラストを指定したり、段階的に上下したり、保存した 2 つのレベルを切り替えたりできます。複数のモニターに同時に適用できます。",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "コントラストを調整",
+        "Push": "レベルを指定または切り替え",
+        "Touch": "レベルを指定または切り替え"
+      }
+    }
+  },
+  "com.valentderah.just-monitor-control.volume": {
+    "Name": "モニターの音量",
+    "Tooltip": "モニター内蔵スピーカーの音量を指定、段階的に変更、またはミュートします。Windows の音量ではありません。",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "音量を調整",
+        "Push": "ミュート、レベルを指定または切り替え",
+        "Touch": "ミュート、レベルを指定または切り替え"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "入力切替",
-    "Tooltip": "指定したポート、または 2 つのポートを切り替えます。",
+    "Tooltip": "指定したポート、または 2 つのポートを切り替えます。"
   },
   "com.valentderah.just-monitor-control.refresh-rate": {
     "Name": "リフレッシュレートの変更",
-    "Tooltip": "Windows が報告するリフレッシュレートです。59.94 Hz などの正確なモードを含みます。",
+    "Tooltip": "Windows が報告するリフレッシュレートです。59.94 Hz などの正確なモードを含みます。"
   },
   "com.valentderah.just-monitor-control.hdr": {
     "Name": "HDR",
@@ -20,7 +49,7 @@
   },
   "com.valentderah.just-monitor-control.sleep": {
     "Name": "スリープ",
-    "Tooltip": "選択したモニターまたはデスクトップ全体をスリープにして、再び解除します。",
+    "Tooltip": "選択したモニターまたはデスクトップ全体をスリープにして、再び解除します。"
   },
   "com.valentderah.just-monitor-control.raw-vcp": {
     "Name": "Raw VCP",
@@ -29,10 +58,12 @@
   "Localization": {
     "Monitors": "モニター",
     "Mode": "モード",
+    "PressAction": "押したとき",
     "Loading": "読み込み中…",
     "Set": "指定",
     "Step": "ステップ",
     "Toggle": "切り替え",
+    "Mute": "ミュート",
     "Value": "値",
     "StepAmount": "ステップ幅",
     "ToggleA": "レベル A",
