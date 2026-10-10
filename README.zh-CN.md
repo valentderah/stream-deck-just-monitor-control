@@ -2,7 +2,7 @@
 
 # Just Monitor Control
 
-适用于 Windows 的 Stream Deck 插件。可控制显示器亮度、视频输入、刷新率、HDR 和睡眠。
+适用于 Windows 的 Stream Deck 插件。可控制显示器亮度、对比度、自带扬声器音量、视频输入、刷新率、HDR 和睡眠。
 
 <img alt="Just Monitor Control" src=".github/assets/cover.jpg" />
 

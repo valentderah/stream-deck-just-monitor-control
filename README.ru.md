@@ -2,7 +2,7 @@
 
 # Just Monitor Control
 
-Плагин Stream Deck для Windows. Управляет яркостью монитора, видеовходом, частотой обновления, HDR и сном.
+Плагин Stream Deck для Windows. Управляет яркостью и контрастностью монитора, громкостью его динамиков, видеовходом, частотой обновления, HDR и сном.
 
 <img alt="Just Monitor Control" src=".github/assets/cover.jpg" />
 
