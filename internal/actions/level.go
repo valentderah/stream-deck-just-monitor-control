@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"sync"
 
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/display"
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/inspector"
@@ -76,6 +77,15 @@ func stepRaw(current uint32, step int32, max uint32) uint32 {
 	return uint32(v)
 }
 
+// dialStep ignores the sign of the configured step, because the direction comes from the rotation.
+func dialStep(step int32, ticks int) int32 {
+	magnitude := int64(step)
+	if magnitude < 0 {
+		magnitude = -magnitude
+	}
+	return int32(max(-100, min(100, magnitude*int64(ticks))))
+}
+
 func levelTarget(s levelSettings, current, max uint32) (uint32, error) {
 	switch s.Mode {
 	case LevelModeSet:
@@ -95,7 +105,10 @@ func levelTarget(s levelSettings, current, max uint32) (uint32, error) {
 
 var errNoLevelRange = errors.New("actions: monitor reports no range for this control")
 
-var levelModes = []LevelMode{LevelModeSet, LevelModeStep, LevelModeToggle}
+var (
+	levelModes     = []LevelMode{LevelModeSet, LevelModeStep, LevelModeToggle}
+	levelDialModes = []LevelMode{LevelModeSet, LevelModeToggle}
+)
 
 var levelModeLabels = map[LevelMode]string{
 	LevelModeSet:    "Set",
@@ -104,19 +117,50 @@ var levelModeLabels = map[LevelMode]string{
 	LevelModeMute:   "Mute",
 }
 
-func levelSchema(defaults levelSettings, modes []LevelMode) inspector.Schema {
+func levelModeOptions(modes []LevelMode) []inspector.Option {
 	options := make([]inspector.Option, len(modes))
 	for i, m := range modes {
 		options[i] = inspector.LocalizedOption(m, levelModeLabels[m])
 	}
+	return options
+}
+
+func levelSchema(defaults levelSettings, modes []LevelMode) inspector.Schema {
 	return inspector.MustBuild(defaults,
 		inspector.MonitorsField(),
-		inspector.Select("mode", "Mode", inspector.TypeString, options...).WithZeroAsUnset(),
+		inspector.Select("mode", "Mode", inspector.TypeString, levelModeOptions(modes)...).WithZeroAsUnset(),
 		inspector.Number("value", "Value").WithRange(0, 100).VisibleIf("mode", LevelModeSet),
 		inspector.Number("step", "StepAmount").WithZeroAsUnset().VisibleIf("mode", LevelModeStep),
 		inspector.Number("toggleA", "ToggleA").WithRange(0, 100).VisibleIf("mode", LevelModeToggle),
 		inspector.Number("toggleB", "ToggleB").WithRange(0, 100).VisibleIf("mode", LevelModeToggle),
 	)
+}
+
+// levelDialSchema always shows the step, because rotation steps in every mode. The mode only picks what a press does.
+func levelDialSchema(defaults levelSettings, modes []LevelMode) inspector.Schema {
+	return inspector.MustBuild(defaults,
+		inspector.MonitorsField(),
+		inspector.Number("step", "StepAmount").WithRange(1, 100).WithZeroAsUnset(),
+		inspector.Select("mode", "PressAction", inspector.TypeString, levelModeOptions(modes)...).WithZeroAsUnset(),
+		inspector.Number("value", "Value").WithRange(0, 100).VisibleIf("mode", LevelModeSet),
+		inspector.Number("toggleA", "ToggleA").WithRange(0, 100).VisibleIf("mode", LevelModeToggle),
+		inspector.Number("toggleB", "ToggleB").WithRange(0, 100).VisibleIf("mode", LevelModeToggle),
+	)
+}
+
+// levelProfile is how the action is configured on one kind of controller.
+type levelProfile struct {
+	defaults levelSettings
+	schema   inspector.Schema
+	modes    []LevelMode
+}
+
+func keyProfile(defaults levelSettings, modes []LevelMode) levelProfile {
+	return levelProfile{defaults: defaults, schema: levelSchema(defaults, modes), modes: modes}
+}
+
+func dialProfile(defaults levelSettings, modes []LevelMode) levelProfile {
+	return levelProfile{defaults: defaults, schema: levelDialSchema(defaults, modes), modes: modes}
 }
 
 // levelIO reads and writes one control on one monitor in the monitor's own units.
@@ -144,40 +188,55 @@ func (v vcpIO) write(ctx context.Context, monitorID string, raw uint32) error {
 }
 
 type Level struct {
-	mgr      display.Manager
-	resp     Responder
-	io       levelIO
-	defaults levelSettings
-	schema   inspector.Schema
-	modes    []LevelMode
+	mgr  display.Manager
+	resp Responder
+	io   levelIO
+	key  levelProfile
+	dial levelProfile
+	// locks keep two buttons on the same monitor from interleaving their read-modify-write.
+	locks *display.IDLocks
 }
 
-func newLevel(mgr display.Manager, resp Responder, io levelIO, defaults levelSettings, schema inspector.Schema, modes []LevelMode) *Level {
-	return &Level{mgr: mgr, resp: resp, io: io, defaults: defaults, schema: schema, modes: modes}
+func newLevel(mgr display.Manager, resp Responder, io levelIO, key, dial levelProfile) *Level {
+	return &Level{mgr: mgr, resp: resp, io: io, key: key, dial: dial, locks: display.NewIDLocks()}
 }
 
-func (l *Level) settings(ev streamdeck.Event) (levelSettings, error) {
-	s, err := decodeSettings(ev, l.schema, l.defaults)
+func (l *Level) profile(ev streamdeck.Event) levelProfile {
+	if ev.Controller() == streamdeck.ControllerEncoder {
+		return l.dial
+	}
+	return l.key
+}
+
+func (l *Level) settings(ev streamdeck.Event, p levelProfile) (levelSettings, error) {
+	s, err := decodeSettings(ev, p.schema, p.defaults)
 	if err != nil {
 		return s, err
 	}
 	if len(s.MonitorIDs) == 0 {
 		return s, display.ErrNoMonitorsSelected
 	}
-	if !slices.Contains(l.modes, s.Mode) {
+	if !slices.Contains(p.modes, s.Mode) {
 		return s, errInvalidMode
 	}
 	return s, nil
 }
 
-func (l *Level) apply(ctx context.Context, ev streamdeck.Event, s levelSettings) error {
-	single := len(s.MonitorIDs) == 1
-	var title string
+// adjust moves every monitor to target and returns the resulting percentage per monitor.
+func (l *Level) adjust(ctx context.Context, monitorIDs []string, needCurrent bool, target func(current, max uint32) (uint32, error)) (map[string]uint32, error) {
+	var mu sync.Mutex
+	percents := make(map[string]uint32, len(monitorIDs))
 
-	err := forEachMonitorParallel(s.MonitorIDs, func(id string) error {
+	err := forEachMonitorParallel(monitorIDs, func(id string) error {
+		unlock, err := l.locks.Lock(ctx, id)
+		if err != nil {
+			return err
+		}
+		defer unlock()
+
 		current, max, err := l.io.read(ctx, id)
-		// Set does not need the current value, only the range.
-		if err != nil && !(s.Mode == LevelModeSet && max > 0) {
+		// Without the current value only an absolute write is possible, and only when the range is known.
+		if err != nil && (needCurrent || max == 0) {
 			return err
 		}
 		if max == 0 {
@@ -186,46 +245,118 @@ func (l *Level) apply(ctx context.Context, ev streamdeck.Event, s levelSettings)
 		if current > max {
 			current = max
 		}
-		next, err := levelTarget(s, current, max)
+		next, err := target(current, max)
 		if err != nil {
 			return err
 		}
 		if err := l.io.write(ctx, id, next); err != nil {
 			return err
 		}
-		if single {
-			title = fmt.Sprintf("%d%%", toPercent(next, max))
-		}
+		mu.Lock()
+		percents[id] = toPercent(next, max)
+		mu.Unlock()
 		return nil
+	})
+	return percents, err
+}
+
+func levelFeedback(percent uint32) map[string]any {
+	return map[string]any{
+		"value":     fmt.Sprintf("%d%%", percent),
+		"indicator": map[string]any{"value": percent},
+	}
+}
+
+// report shows the first monitor on a dial, because the touch strip has room for one value.
+func (l *Level) report(ev streamdeck.Event, onDial bool, monitorIDs []string, percents map[string]uint32) {
+	if onDial {
+		_ = l.resp.SetFeedback(ev.Context, levelFeedback(percents[monitorIDs[0]]))
+		return
+	}
+	if len(monitorIDs) == 1 {
+		_ = l.resp.SetTitle(ev.Context, fmt.Sprintf("%d%%", percents[monitorIDs[0]]))
+	}
+	_ = l.resp.ShowOk(ev.Context)
+}
+
+// press applies the configured mode. A key press and a dial press share it.
+func (l *Level) press(ctx context.Context, ev streamdeck.Event, onDial bool, s levelSettings) error {
+	percents, err := l.adjust(ctx, s.MonitorIDs, s.Mode != LevelModeSet, func(current, max uint32) (uint32, error) {
+		return levelTarget(s, current, max)
 	})
 	if err != nil {
 		_ = l.resp.ShowAlert(ev.Context)
 		return err
 	}
-
-	if single {
-		_ = l.resp.SetTitle(ev.Context, title)
-	}
-	_ = l.resp.ShowOk(ev.Context)
+	l.report(ev, onDial, s.MonitorIDs, percents)
 	return nil
 }
 
+// showCurrent fills the touch strip when the action appears on a dial.
+func (l *Level) showCurrent(ctx context.Context, ev streamdeck.Event) error {
+	s, _ := decodeSettings(ev, l.dial.schema, l.dial.defaults)
+	if len(s.MonitorIDs) == 0 {
+		return nil
+	}
+	current, max, err := l.io.read(ctx, s.MonitorIDs[0])
+	if err != nil {
+		return err
+	}
+	return l.resp.SetFeedback(ev.Context, levelFeedback(toPercent(current, max)))
+}
+
 func (l *Level) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
-	s, err := l.settings(ev)
+	s, err := l.settings(ev, l.key)
 	if err != nil {
 		_ = l.resp.ShowAlert(ev.Context)
 		return err
 	}
-	return l.apply(ctx, ev, s)
+	return l.press(ctx, ev, false, s)
 }
 
-func (l *Level) OnWillAppear(context.Context, streamdeck.Event) error { return nil }
-
-func (l *Level) OnPropertyInspectorDidAppear(context.Context, streamdeck.Event) error {
+func (l *Level) OnDialRotate(ctx context.Context, ev streamdeck.Event, ticks int) error {
+	if ticks == 0 {
+		return nil
+	}
+	s, err := l.settings(ev, l.dial)
+	if err != nil {
+		_ = l.resp.ShowAlert(ev.Context)
+		return err
+	}
+	step := dialStep(s.Step, ticks)
+	percents, err := l.adjust(ctx, s.MonitorIDs, true, func(current, max uint32) (uint32, error) {
+		return stepRaw(current, step, max), nil
+	})
+	if err != nil {
+		_ = l.resp.ShowAlert(ev.Context)
+		return err
+	}
+	l.report(ev, true, s.MonitorIDs, percents)
 	return nil
+}
+
+func (l *Level) OnDialPress(ctx context.Context, ev streamdeck.Event) error {
+	s, err := l.settings(ev, l.dial)
+	if err != nil {
+		_ = l.resp.ShowAlert(ev.Context)
+		return err
+	}
+	return l.press(ctx, ev, true, s)
+}
+
+func (l *Level) OnWillAppear(ctx context.Context, ev streamdeck.Event) error {
+	if ev.Controller() != streamdeck.ControllerEncoder {
+		return nil
+	}
+	return l.showCurrent(ctx, ev)
 }
 
 func (l *Level) OnSendToPlugin(ctx context.Context, ev streamdeck.Event) error {
-	_ = HandleCommonPluginMessage(ctx, l.mgr, l.resp, ev, l.schema)
-	return nil
+	msg := parsePluginMessage(ev)
+	schema := l.key.schema
+	if msg.Controller == streamdeck.ControllerEncoder {
+		schema = l.dial.schema
+	}
+	_, err := handleInspectorMessage(ctx, l.mgr, l.resp, ev, msg, schema)
+	return err
 }

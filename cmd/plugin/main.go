@@ -53,14 +53,9 @@ func main() {
 	defer client.Close()
 
 	r := streamdeck.NewRouter()
-	r.Register("com.valentderah.just-monitor-control.brightness", actions.NewBrightness(mgr, client))
-	r.Register("com.valentderah.just-monitor-control.contrast", actions.NewContrast(mgr, client))
-	r.Register("com.valentderah.just-monitor-control.volume", actions.NewVolume(mgr, client))
-	r.Register("com.valentderah.just-monitor-control.input-switch", actions.NewInputSwitch(mgr, client))
-	r.Register("com.valentderah.just-monitor-control.refresh-rate", actions.NewRefreshRate(mgr, client))
-	r.Register("com.valentderah.just-monitor-control.hdr", actions.NewHDR(mgr, client))
-	r.Register("com.valentderah.just-monitor-control.sleep", actions.NewSleep(mgr, client))
-	r.Register("com.valentderah.just-monitor-control.raw-vcp", actions.NewRawVCP(mgr, client))
+	for uuid, handler := range actions.All(mgr, client) {
+		r.Register(uuid, handler)
+	}
 
 	if *debug {
 		log.Printf("plugin registered uuid=%s", *pluginUUID)
@@ -82,14 +77,18 @@ func main() {
 	}
 }
 
+// runListMonitors prints 0 for a value the monitor does not report over DDC/CI.
 func runListMonitors(mgr display.Manager) error {
-	mons, err := mgr.GetMonitors(context.Background())
+	ctx := context.Background()
+	mons, err := mgr.GetMonitors(ctx)
 	if err != nil {
 		return err
 	}
 	fmt.Println("id\tname\tbrightness\tport")
 	for _, m := range mons {
-		fmt.Printf("%s\t%s\t%d\t%d\n", m.ID, m.Name, m.Brightness, m.CurrentPort)
+		brightness, _, _ := mgr.GetVCP(ctx, m.ID, display.VCPBrightness)
+		port, _, _ := mgr.GetVCP(ctx, m.ID, display.VCPInputSource)
+		fmt.Printf("%s\t%s\t%d\t%d\n", m.ID, m.Name, brightness, port)
 	}
 	return nil
 }

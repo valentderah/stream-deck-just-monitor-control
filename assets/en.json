@@ -4,15 +4,36 @@
   "Category": "Just Monitor Control",
   "com.valentderah.just-monitor-control.brightness": {
     "Name": "Brightness",
-    "Tooltip": "Set an exact level, step it up or down, or switch between two saved states on several monitors at once."
+    "Tooltip": "Set an exact level, step it up or down, or switch between two saved states on several monitors at once.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "Adjust brightness",
+        "Push": "Set or toggle level",
+        "Touch": "Set or toggle level"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.contrast": {
     "Name": "Contrast",
-    "Tooltip": "Set an exact contrast level, step it up or down, or switch between two saved levels on several monitors at once."
+    "Tooltip": "Set an exact contrast level, step it up or down, or switch between two saved levels on several monitors at once.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "Adjust contrast",
+        "Push": "Set or toggle level",
+        "Touch": "Set or toggle level"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.volume": {
     "Name": "Monitor Volume",
-    "Tooltip": "Set, step, or mute the volume of the monitor's own speakers. This is not the Windows volume."
+    "Tooltip": "Set, step, or mute the volume of the monitor's own speakers. This is not the Windows volume.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "Adjust volume",
+        "Push": "Mute, set or toggle level",
+        "Touch": "Mute, set or toggle level"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "Input Switch",
@@ -37,6 +58,7 @@
   "Localization": {
     "Monitors": "Monitors",
     "Mode": "Mode",
+    "PressAction": "On Press",
     "Loading": "Loading…",
     "Set": "Set",
     "Step": "Step",

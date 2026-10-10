@@ -30,13 +30,20 @@ func decodeSettings[T any](ev streamdeck.Event, schema inspector.Schema, default
 	return inspector.Decode(schema, defaults, settingsPayload(ev))
 }
 
-func parsePluginMessage(ev streamdeck.Event) (map[string]any, error) {
-	var m map[string]any
-	if len(ev.Payload) == 0 {
-		return m, nil
+// inspectorRequest is a message the property inspector sends to the plugin.
+type inspectorRequest struct {
+	Type       string `json:"type"`
+	Controller string `json:"controller"`
+	MonitorID  string `json:"monitorId"`
+}
+
+// parsePluginMessage returns the zero request for a payload it cannot read.
+func parsePluginMessage(ev streamdeck.Event) inspectorRequest {
+	var m inspectorRequest
+	if len(ev.Payload) > 0 {
+		_ = json.Unmarshal(ev.Payload, &m)
 	}
-	err := json.Unmarshal(ev.Payload, &m)
-	return m, err
+	return m
 }
 
 func sendMonitorsPayload(ctx context.Context, mgr display.Manager, resp Responder, ev streamdeck.Event) error {
@@ -53,27 +60,21 @@ func sendMonitorsPayload(ctx context.Context, mgr display.Manager, resp Responde
 	})
 }
 
-func HandleCommonPluginMessage(ctx context.Context, mgr display.Manager, resp Responder, ev streamdeck.Event, schema inspector.Schema) bool {
-	msg, err := parsePluginMessage(ev)
-	if err != nil {
-		return false
-	}
-	switch msg["type"] {
+// handleInspectorMessage serves the messages every property inspector sends and reports whether msg was one of them.
+func handleInspectorMessage(ctx context.Context, mgr display.Manager, resp Responder, ev streamdeck.Event, msg inspectorRequest, schema inspector.Schema) (bool, error) {
+	switch msg.Type {
 	case "get_inspector":
-		_ = resp.SendToPropertyInspector(ev.Context, ev.Action, map[string]any{
+		err := resp.SendToPropertyInspector(ev.Context, ev.Action, map[string]any{
 			"type":   "schema",
 			"schema": schema,
 		})
-		_ = sendMonitorsPayload(ctx, mgr, resp, ev)
-		return true
+		return true, errors.Join(err, sendMonitorsPayload(ctx, mgr, resp, ev))
 	case "get_monitors":
-		_ = sendMonitorsPayload(ctx, mgr, resp, ev)
-		return true
+		return true, sendMonitorsPayload(ctx, mgr, resp, ev)
 	case "identify":
-		_ = mgr.Identify(ctx)
-		return true
+		return true, mgr.Identify(ctx)
 	}
-	return false
+	return false, nil
 }
 
 func forEachMonitorParallel(ids []string, fn func(id string) error) error {
@@ -101,14 +102,4 @@ func forEachMonitorParallel(ids []string, fn func(id string) error) error {
 		}
 	}
 	return first
-}
-
-func liveMonitorIDs(wanted []string, available map[string]struct{}) []string {
-	var out []string
-	for _, id := range wanted {
-		if _, ok := available[id]; ok {
-			out = append(out, id)
-		}
-	}
-	return out
 }

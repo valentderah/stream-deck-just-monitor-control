@@ -5,22 +5,43 @@
   "com.valentderah.just-monitor-control.brightness": {
     "Name": "밝기",
     "Tooltip": "정확한 밝기를 지정하거나, 단계로 올리거나 내리거나, 저장된 두 상태 사이를 전환할 수 있습니다. 여러 모니터에 동시에 적용됩니다.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "밝기 조절",
+        "Push": "수준 지정 또는 전환",
+        "Touch": "수준 지정 또는 전환"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.contrast": {
     "Name": "대비",
     "Tooltip": "정확한 대비를 지정하거나, 단계로 올리거나 내리거나, 저장된 두 레벨 사이를 전환할 수 있습니다. 여러 모니터에 동시에 적용됩니다.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "대비 조절",
+        "Push": "수준 지정 또는 전환",
+        "Touch": "수준 지정 또는 전환"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.volume": {
     "Name": "모니터 음량",
-    "Tooltip": "모니터 내장 스피커의 음량을 지정하거나, 단계로 조절하거나, 음소거합니다. Windows 음량이 아닙니다."
+    "Tooltip": "모니터 내장 스피커의 음량을 지정하거나, 단계로 조절하거나, 음소거합니다. Windows 음량이 아닙니다.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "음량 조절",
+        "Push": "음소거, 수준 지정 또는 전환",
+        "Touch": "음소거, 수준 지정 또는 전환"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "입력 전환",
-    "Tooltip": "지정한 포트로 전환하거나 두 포트 사이를 전환합니다.",
+    "Tooltip": "지정한 포트로 전환하거나 두 포트 사이를 전환합니다."
   },
   "com.valentderah.just-monitor-control.refresh-rate": {
     "Name": "주사율 변경",
-    "Tooltip": "Windows가 보고하는 주사율입니다. 59.94 Hz 같은 정확한 모드를 포함합니다.",
+    "Tooltip": "Windows가 보고하는 주사율입니다. 59.94 Hz 같은 정확한 모드를 포함합니다."
   },
   "com.valentderah.just-monitor-control.hdr": {
     "Name": "HDR",
@@ -28,7 +49,7 @@
   },
   "com.valentderah.just-monitor-control.sleep": {
     "Name": "절전",
-    "Tooltip": "선택한 모니터나 바탕 화면 전체를 절전으로 전환한 뒤 다시 깨웁니다.",
+    "Tooltip": "선택한 모니터나 바탕 화면 전체를 절전으로 전환한 뒤 다시 깨웁니다."
   },
   "com.valentderah.just-monitor-control.raw-vcp": {
     "Name": "Raw VCP",
@@ -37,6 +58,7 @@
   "Localization": {
     "Monitors": "모니터",
     "Mode": "모드",
+    "PressAction": "누를 때",
     "Loading": "불러오는 중…",
     "Set": "지정",
     "Step": "단계",

@@ -8,8 +8,15 @@ func defaultContrastSettings() levelSettings {
 	return levelSettings{Mode: LevelModeSet, Value: 50, Step: 5, ToggleA: 50, ToggleB: 75}
 }
 
-var contrastSchema = levelSchema(defaultContrastSettings(), levelModes)
+func defaultContrastDialSettings() levelSettings {
+	return levelSettings{Mode: LevelModeToggle, Value: 50, Step: 5, ToggleA: 50, ToggleB: 75}
+}
+
+var (
+	contrastKey  = keyProfile(defaultContrastSettings(), levelModes)
+	contrastDial = dialProfile(defaultContrastDialSettings(), levelDialModes)
+)
 
 func NewContrast(mgr display.Manager, resp Responder) *Level {
-	return newLevel(mgr, resp, vcpIO{mgr, vcpContrast}, defaultContrastSettings(), contrastSchema, levelModes)
+	return newLevel(mgr, resp, vcpIO{mgr, vcpContrast}, contrastKey, contrastDial)
 }

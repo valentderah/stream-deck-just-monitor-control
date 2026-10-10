@@ -101,7 +101,9 @@ const testCode byte = 0x12
 
 func testLevel(mgr *fakeManager, resp *fakeResponder) *Level {
 	defaults := levelSettings{Mode: LevelModeSet, Value: 50, Step: 5, ToggleA: 25, ToggleB: 75}
-	return newLevel(mgr, resp, vcpIO{mgr, testCode}, defaults, levelSchema(defaults, levelModes), levelModes)
+	dialDefaults := defaults
+	dialDefaults.Mode = LevelModeToggle
+	return newLevel(mgr, resp, vcpIO{mgr, testCode}, keyProfile(defaults, levelModes), dialProfile(dialDefaults, levelDialModes))
 }
 
 func TestLevelWritesRawPerMonitor(t *testing.T) {

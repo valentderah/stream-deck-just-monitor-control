@@ -5,22 +5,43 @@
   "com.valentderah.just-monitor-control.brightness": {
     "Name": "Luminosité",
     "Tooltip": "Définir un niveau exact, le monter ou le baisser par pas ou basculer entre deux états enregistrés, sur plusieurs moniteurs à la fois.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "Régler la luminosité",
+        "Push": "Définir ou basculer le niveau",
+        "Touch": "Définir ou basculer le niveau"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.contrast": {
     "Name": "Contraste",
     "Tooltip": "Définir un contraste exact, le monter ou le baisser par pas ou basculer entre deux niveaux enregistrés, sur plusieurs moniteurs à la fois.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "Régler le contraste",
+        "Push": "Définir ou basculer le niveau",
+        "Touch": "Définir ou basculer le niveau"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.volume": {
     "Name": "Volume du moniteur",
-    "Tooltip": "Définir, modifier par pas ou couper le volume des haut-parleurs du moniteur. Ce n'est pas le volume de Windows."
+    "Tooltip": "Définir, modifier par pas ou couper le volume des haut-parleurs du moniteur. Ce n'est pas le volume de Windows.",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "Régler le volume",
+        "Push": "Couper le son, définir ou basculer le niveau",
+        "Touch": "Couper le son, définir ou basculer le niveau"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "Changer d'entrée",
-    "Tooltip": "Passer sur un port précis ou basculer entre deux.",
+    "Tooltip": "Passer sur un port précis ou basculer entre deux."
   },
   "com.valentderah.just-monitor-control.refresh-rate": {
     "Name": "Modification de la fréquence de rafraîchissement",
-    "Tooltip": "Fréquences de rafraîchissement signalées par Windows, y compris les modes exacts tels que 59,94 Hz.",
+    "Tooltip": "Fréquences de rafraîchissement signalées par Windows, y compris les modes exacts tels que 59,94 Hz."
   },
   "com.valentderah.just-monitor-control.hdr": {
     "Name": "HDR",
@@ -28,7 +49,7 @@
   },
   "com.valentderah.just-monitor-control.sleep": {
     "Name": "Veille",
-    "Tooltip": "Mettre en veille les moniteurs sélectionnés ou tout le bureau, puis les réveiller.",
+    "Tooltip": "Mettre en veille les moniteurs sélectionnés ou tout le bureau, puis les réveiller."
   },
   "com.valentderah.just-monitor-control.raw-vcp": {
     "Name": "Raw VCP",
@@ -37,6 +58,7 @@
   "Localization": {
     "Monitors": "Moniteurs",
     "Mode": "Mode",
+    "PressAction": "À l’appui",
     "Loading": "Chargement…",
     "Set": "Définir",
     "Step": "Pas",

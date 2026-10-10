@@ -19,13 +19,13 @@ func muteManager(a, b uint32) *fakeManager {
 }
 
 func TestVolumeSchemaMatchesSettings(t *testing.T) {
-	if err := inspector.Verify(volumeSchema, defaultVolumeSettings()); err != nil {
+	if err := inspector.Verify(volumeKey.schema, defaultVolumeSettings()); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestVolumeDefaults(t *testing.T) {
-	got, err := decodeSettings(settingsEvent(`{}`), volumeSchema, defaultVolumeSettings())
+	got, err := decodeSettings(settingsEvent(`{}`), volumeKey.schema, defaultVolumeSettings())
 	if err != nil {
 		t.Fatal(err)
 	}

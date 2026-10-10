@@ -8,13 +8,17 @@ import (
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/streamdeck"
 )
 
+const (
+	sleepStateAwake  = 0
+	sleepStateAsleep = 1
+)
+
 type Sleep struct {
-	mgr  display.Manager
-	resp Responder
+	inspectorHost
 }
 
 func NewSleep(mgr display.Manager, resp Responder) *Sleep {
-	return &Sleep{mgr: mgr, resp: resp}
+	return &Sleep{inspectorHost{mgr: mgr, resp: resp, schema: sleepSchema}}
 }
 
 type SleepMode string
@@ -44,6 +48,13 @@ var sleepSchema = inspector.MustBuild(defaultSleepSettings(),
 	).WithZeroAsUnset(),
 )
 
+func sleepState(asleep bool) int {
+	if asleep {
+		return sleepStateAsleep
+	}
+	return sleepStateAwake
+}
+
 func (a *Sleep) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 	s, err := decodeSettings(ev, sleepSchema, defaultSleepSettings())
 	if err != nil {
@@ -54,53 +65,41 @@ func (a *Sleep) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 		_ = a.resp.ShowAlert(ev.Context)
 		return display.ErrNoMonitorsSelected
 	}
-	targetState := 0
+
+	var sleep bool
 	switch s.Mode {
-	case SleepModeWake:
-		err = a.mgr.Wake(ctx, s.MonitorIDs)
-		s.Asleep = false
-	case SleepModeToggle:
-		if s.Asleep {
-			err = a.mgr.Wake(ctx, s.MonitorIDs)
-			s.Asleep = false
-		} else {
-			err = a.mgr.Sleep(ctx, s.MonitorIDs)
-			s.Asleep = true
-			targetState = 1
-		}
-		_ = a.resp.SetSettings(ev.Context, s)
 	case SleepModeSleep:
-		err = a.mgr.Sleep(ctx, s.MonitorIDs)
-		s.Asleep = true
-		targetState = 1
+		sleep = true
+	case SleepModeWake:
+		sleep = false
+	case SleepModeToggle:
+		sleep = !s.Asleep
 	default:
 		_ = a.resp.ShowAlert(ev.Context)
 		return errInvalidMode
+	}
+
+	if sleep {
+		err = a.mgr.Sleep(ctx, s.MonitorIDs)
+	} else {
+		err = a.mgr.Wake(ctx, s.MonitorIDs)
 	}
 	if err != nil {
 		_ = a.resp.ShowAlert(ev.Context)
 		return err
 	}
-	_ = a.resp.SetState(ev.Context, targetState)
+
+	// The toggle state is saved only after the monitors followed, so a failed press can be repeated.
+	if s.Mode == SleepModeToggle {
+		s.Asleep = sleep
+		_ = a.resp.SetSettings(ev.Context, s)
+	}
+	_ = a.resp.SetState(ev.Context, sleepState(sleep))
 	_ = a.resp.ShowOk(ev.Context)
 	return nil
 }
 
 func (a *Sleep) OnWillAppear(ctx context.Context, ev streamdeck.Event) error {
 	s, _ := decodeSettings(ev, sleepSchema, defaultSleepSettings())
-	if s.Asleep {
-		_ = a.resp.SetState(ev.Context, 1)
-	} else {
-		_ = a.resp.SetState(ev.Context, 0)
-	}
-	return nil
-}
-
-func (a *Sleep) OnPropertyInspectorDidAppear(context.Context, streamdeck.Event) error {
-	return nil
-}
-
-func (a *Sleep) OnSendToPlugin(ctx context.Context, ev streamdeck.Event) error {
-	_ = HandleCommonPluginMessage(ctx, a.mgr, a.resp, ev, sleepSchema)
-	return nil
+	return a.resp.SetState(ev.Context, sleepState(s.Asleep))
 }

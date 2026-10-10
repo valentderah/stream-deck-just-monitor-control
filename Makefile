@@ -43,7 +43,7 @@ link: build
 
 test:
 	go test ./...
-	node --test test/js/inspector-core.test.js
+	node --test test/js/inspector-core.test.js test/js/catalogs.test.js
 
 clean:
 	$(CLEAN_CMD)

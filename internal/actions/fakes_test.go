@@ -11,21 +11,34 @@ import (
 var errBoom = errors.New("boom")
 
 type fakeResponder struct {
-	alerts int
-	oks    int
-	titles []string
-	states []int
-	sent   []map[string]any
+	alerts    int
+	oks       int
+	titles    []string
+	states    []int
+	sent      []map[string]any
+	feedbacks []map[string]any
+	settings  []any
 }
 
-func (r *fakeResponder) SetTitle(_, title string) error { r.titles = append(r.titles, title); return nil }
-func (r *fakeResponder) ShowAlert(string) error         { r.alerts++; return nil }
-func (r *fakeResponder) ShowOk(string) error            { r.oks++; return nil }
+func (r *fakeResponder) SetFeedback(_ string, payload any) error {
+	r.feedbacks = append(r.feedbacks, payload.(map[string]any))
+	return nil
+}
+
+func (r *fakeResponder) SetTitle(_, title string) error {
+	r.titles = append(r.titles, title)
+	return nil
+}
+func (r *fakeResponder) ShowAlert(string) error { r.alerts++; return nil }
+func (r *fakeResponder) ShowOk(string) error    { r.oks++; return nil }
 func (r *fakeResponder) SetState(_ string, state int) error {
 	r.states = append(r.states, state)
 	return nil
 }
-func (r *fakeResponder) SetSettings(string, any) error { return nil }
+func (r *fakeResponder) SetSettings(_ string, settings any) error {
+	r.settings = append(r.settings, settings)
+	return nil
+}
 
 func (r *fakeResponder) SendToPropertyInspector(_, _ string, payload any) error {
 	r.sent = append(r.sent, payload.(map[string]any))
@@ -51,6 +64,9 @@ type fakeManager struct {
 	levels   map[fakeKey]fakeLevel
 	readErr  map[string]error
 	writeErr map[string]error
+
+	sleeps, wakes int
+	sleepErr      error
 }
 
 func (m *fakeManager) GetMonitors(context.Context) ([]display.Monitor, error) {
@@ -85,13 +101,14 @@ func (m *fakeManager) SetVCP(_ context.Context, id string, code byte, value uint
 	return nil
 }
 
-func (m *fakeManager) GetBrightness(ctx context.Context, id string) (uint32, error) {
-	cur, _, err := m.GetVCP(ctx, id, fakeBrightnessCode)
-	return cur, err
+func (m *fakeManager) Sleep(context.Context, []string) error {
+	m.sleeps++
+	return m.sleepErr
 }
 
-func (m *fakeManager) SetBrightness(ctx context.Context, id string, value uint32) error {
-	return m.SetVCP(ctx, id, fakeBrightnessCode, value)
+func (m *fakeManager) Wake(context.Context, []string) error {
+	m.wakes++
+	return nil
 }
 
 func (m *fakeManager) level(id string, code byte) uint32 {

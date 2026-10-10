@@ -9,13 +9,13 @@ import (
 )
 
 func TestContrastSchemaMatchesSettings(t *testing.T) {
-	if err := inspector.Verify(contrastSchema, defaultContrastSettings()); err != nil {
+	if err := inspector.Verify(contrastKey.schema, defaultContrastSettings()); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestContrastDefaults(t *testing.T) {
-	got, err := decodeSettings(settingsEvent(`{}`), contrastSchema, defaultContrastSettings())
+	got, err := decodeSettings(settingsEvent(`{}`), contrastKey.schema, defaultContrastSettings())
 	if err != nil {
 		t.Fatal(err)
 	}

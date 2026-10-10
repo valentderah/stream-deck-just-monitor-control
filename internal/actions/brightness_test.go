@@ -10,7 +10,7 @@ import (
 )
 
 func TestBrightnessSchemaMatchesSettings(t *testing.T) {
-	if err := inspector.Verify(brightnessSchema, defaultBrightnessSettings()); err != nil {
+	if err := inspector.Verify(brightnessKey.schema, defaultBrightnessSettings()); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -30,7 +30,7 @@ func TestDecodeBrightnessSettings(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			got, err := decodeSettings(settingsEvent(c.settings), brightnessSchema, defaultBrightnessSettings())
+			got, err := decodeSettings(settingsEvent(c.settings), brightnessKey.schema, defaultBrightnessSettings())
 			if err != nil {
 				t.Fatal(err)
 			}

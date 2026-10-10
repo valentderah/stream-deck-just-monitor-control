@@ -18,13 +18,23 @@ const (
 	volumeStateMuted  = 1
 )
 
-var volumeModes = []LevelMode{LevelModeSet, LevelModeStep, LevelModeToggle, LevelModeMute}
+var (
+	volumeModes     = []LevelMode{LevelModeSet, LevelModeStep, LevelModeToggle, LevelModeMute}
+	volumeDialModes = []LevelMode{LevelModeMute, LevelModeSet, LevelModeToggle}
+)
 
 func defaultVolumeSettings() levelSettings {
 	return levelSettings{Mode: LevelModeSet, Value: 50, Step: 5, ToggleA: 20, ToggleB: 60}
 }
 
-var volumeSchema = levelSchema(defaultVolumeSettings(), volumeModes)
+func defaultVolumeDialSettings() levelSettings {
+	return levelSettings{Mode: LevelModeMute, Value: 50, Step: 2, ToggleA: 20, ToggleB: 60}
+}
+
+var (
+	volumeKey  = keyProfile(defaultVolumeSettings(), volumeModes)
+	volumeDial = dialProfile(defaultVolumeDialSettings(), volumeDialModes)
+)
 
 // Volume controls the monitor's own speakers, not the Windows volume.
 type Volume struct {
@@ -32,7 +42,7 @@ type Volume struct {
 }
 
 func NewVolume(mgr display.Manager, resp Responder) *Volume {
-	return &Volume{newLevel(mgr, resp, vcpIO{mgr, vcpVolume}, defaultVolumeSettings(), volumeSchema, volumeModes)}
+	return &Volume{newLevel(mgr, resp, vcpIO{mgr, vcpVolume}, volumeKey, volumeDial)}
 }
 
 func muteState(muted bool) int {
@@ -42,8 +52,8 @@ func muteState(muted bool) int {
 	return volumeStateNormal
 }
 
-func (v *Volume) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
-	s, err := v.settings(ev)
+func (v *Volume) pressVolume(ctx context.Context, ev streamdeck.Event, onDial bool, p levelProfile) error {
+	s, err := v.settings(ev, p)
 	if err != nil {
 		_ = v.resp.ShowAlert(ev.Context)
 		return err
@@ -51,11 +61,19 @@ func (v *Volume) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 	if s.Mode == LevelModeMute {
 		return v.toggleMute(ctx, ev, s.MonitorIDs)
 	}
-	if err := v.apply(ctx, ev, s); err != nil {
+	if err := v.press(ctx, ev, onDial, s); err != nil {
 		return err
 	}
 	_ = v.resp.SetState(ev.Context, volumeStateNormal)
 	return nil
+}
+
+func (v *Volume) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
+	return v.pressVolume(ctx, ev, false, v.key)
+}
+
+func (v *Volume) OnDialPress(ctx context.Context, ev streamdeck.Event) error {
+	return v.pressVolume(ctx, ev, true, v.dial)
 }
 
 // toggleMute flips relative to the first monitor and applies the result to all of them.
@@ -86,7 +104,8 @@ func (v *Volume) toggleMute(ctx context.Context, ev streamdeck.Event, monitorIDs
 }
 
 func (v *Volume) OnWillAppear(ctx context.Context, ev streamdeck.Event) error {
-	s, _ := decodeSettings(ev, v.schema, v.defaults)
+	p := v.profile(ev)
+	s, _ := decodeSettings(ev, p.schema, p.defaults)
 	muted := false
 	if s.Mode == LevelModeMute && len(s.MonitorIDs) > 0 {
 		if current, _, err := v.mgr.GetVCP(ctx, s.MonitorIDs[0], vcpMute); err == nil {
@@ -94,5 +113,5 @@ func (v *Volume) OnWillAppear(ctx context.Context, ev streamdeck.Event) error {
 		}
 	}
 	_ = v.resp.SetState(ev.Context, muteState(muted))
-	return nil
+	return v.Level.OnWillAppear(ctx, ev)
 }

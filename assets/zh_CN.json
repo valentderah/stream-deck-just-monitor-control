@@ -5,22 +5,43 @@
   "com.valentderah.just-monitor-control.brightness": {
     "Name": "亮度",
     "Tooltip": "可以设定精确亮度、按步进增减，或在两个已保存的状态之间切换，同时用于多台显示器。",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "调节亮度",
+        "Push": "设定或切换级别",
+        "Touch": "设定或切换级别"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.contrast": {
     "Name": "对比度",
     "Tooltip": "可以设定精确对比度、按步进增减，或在两个已保存的级别之间切换，同时用于多台显示器。",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "调节对比度",
+        "Push": "设定或切换级别",
+        "Touch": "设定或切换级别"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.volume": {
     "Name": "显示器音量",
-    "Tooltip": "设定、按步进调整或静音显示器自带扬声器的音量。这不是 Windows 音量。"
+    "Tooltip": "设定、按步进调整或静音显示器自带扬声器的音量。这不是 Windows 音量。",
+    "Encoder": {
+      "TriggerDescription": {
+        "Rotate": "调节音量",
+        "Push": "静音、设定或切换级别",
+        "Touch": "静音、设定或切换级别"
+      }
+    }
   },
   "com.valentderah.just-monitor-control.input-switch": {
     "Name": "切换输入",
-    "Tooltip": "切换到指定端口，或在两个端口之间切换。",
+    "Tooltip": "切换到指定端口，或在两个端口之间切换。"
   },
   "com.valentderah.just-monitor-control.refresh-rate": {
     "Name": "更改刷新率",
-    "Tooltip": "Windows 报告的刷新率，包括 59.94 Hz 这类精确模式。",
+    "Tooltip": "Windows 报告的刷新率，包括 59.94 Hz 这类精确模式。"
   },
   "com.valentderah.just-monitor-control.hdr": {
     "Name": "HDR",
@@ -28,7 +49,7 @@
   },
   "com.valentderah.just-monitor-control.sleep": {
     "Name": "睡眠",
-    "Tooltip": "让所选显示器或整个桌面进入睡眠，然后再唤醒。",
+    "Tooltip": "让所选显示器或整个桌面进入睡眠，然后再唤醒。"
   },
   "com.valentderah.just-monitor-control.raw-vcp": {
     "Name": "Raw VCP",
@@ -37,6 +58,7 @@
   "Localization": {
     "Monitors": "显示器",
     "Mode": "模式",
+    "PressAction": "按下时",
     "Loading": "正在加载…",
     "Set": "设定",
     "Step": "步进",

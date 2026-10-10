@@ -2,6 +2,7 @@ package actions
 
 import (
 	"context"
+	"errors"
 
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/display"
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/inspector"
@@ -9,12 +10,11 @@ import (
 )
 
 type RefreshRate struct {
-	mgr  display.Manager
-	resp Responder
+	inspectorHost
 }
 
 func NewRefreshRate(mgr display.Manager, resp Responder) *RefreshRate {
-	return &RefreshRate{mgr: mgr, resp: resp}
+	return &RefreshRate{inspectorHost{mgr: mgr, resp: resp, schema: refreshSchema}}
 }
 
 type refreshSettings struct {
@@ -51,36 +51,28 @@ func (a *RefreshRate) OnKeyUp(ctx context.Context, ev streamdeck.Event) error {
 	return nil
 }
 
-func (a *RefreshRate) OnWillAppear(context.Context, streamdeck.Event) error { return nil }
-
-func (a *RefreshRate) OnPropertyInspectorDidAppear(context.Context, streamdeck.Event) error {
-	return nil
-}
-
 func (a *RefreshRate) OnSendToPlugin(ctx context.Context, ev streamdeck.Event) error {
-	if HandleCommonPluginMessage(ctx, a.mgr, a.resp, ev, refreshSchema) {
+	msg := parsePluginMessage(ev)
+	if handled, err := handleInspectorMessage(ctx, a.mgr, a.resp, ev, msg, refreshSchema); handled {
+		return err
+	}
+	if msg.Type != "get_refresh_rates" {
 		return nil
 	}
-	msg, _ := parsePluginMessage(ev)
-	if t, _ := msg["type"].(string); t == "get_refresh_rates" {
-		id, _ := msg["monitorId"].(string)
-		rates, err := a.mgr.ListRefreshRates(ctx, id)
-		if err != nil {
-			rates = nil
-		}
-		payload := make([]map[string]any, 0, len(rates))
-		for _, r := range rates {
-			payload = append(payload, map[string]any{
-				"numerator":   r.Numerator,
-				"denominator": r.Denominator,
-				"hz":          r.Hertz(),
-			})
-		}
-		return a.resp.SendToPropertyInspector(ev.Context, ev.Action, map[string]any{
-			"type":      "refresh_rates",
-			"monitorId": id,
-			"rates":     payload,
+	// The inspector still gets an answer on failure, so its list stops loading.
+	rates, listErr := a.mgr.ListRefreshRates(ctx, msg.MonitorID)
+	payload := make([]map[string]any, 0, len(rates))
+	for _, r := range rates {
+		payload = append(payload, map[string]any{
+			"numerator":   r.Numerator,
+			"denominator": r.Denominator,
+			"hz":          r.Hertz(),
 		})
 	}
-	return nil
+	sendErr := a.resp.SendToPropertyInspector(ev.Context, ev.Action, map[string]any{
+		"type":      "refresh_rates",
+		"monitorId": msg.MonitorID,
+		"rates":     payload,
+	})
+	return errors.Join(listErr, sendErr)
 }

@@ -4,10 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"os"
 	"reflect"
+	"slices"
 	"testing"
 
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/display"
+	"github.com/valentderah/stream-deck-just-monitor-control/internal/inspector"
 	"github.com/valentderah/stream-deck-just-monitor-control/internal/streamdeck"
 )
 
@@ -57,25 +60,54 @@ func TestSendMonitorsPayloadSendsEmptyListOnOtherErrors(t *testing.T) {
 	}
 }
 
-func TestPropertyInspectorDidAppearSendsNothing(t *testing.T) {
-	resp := &fakeResponder{}
-	mgr := &fakeManager{}
-	handlers := []streamdeck.ActionHandler{
-		NewBrightness(mgr, resp),
-		NewContrast(mgr, resp),
-		NewVolume(mgr, resp),
-		NewInputSwitch(mgr, resp),
-		NewRefreshRate(mgr, resp),
-		NewHDR(mgr, resp),
-		NewSleep(mgr, resp),
-		NewRawVCP(mgr, resp),
+func TestLevelInspectorSchemaFollowsController(t *testing.T) {
+	cases := []struct {
+		message string
+		want    inspector.Schema
+	}{
+		{`{"type":"get_inspector"}`, brightnessKey.schema},
+		{`{"type":"get_inspector","controller":"Keypad"}`, brightnessKey.schema},
+		{`{"type":"get_inspector","controller":"Encoder"}`, brightnessDial.schema},
 	}
-	for _, h := range handlers {
-		if err := h.OnPropertyInspectorDidAppear(context.Background(), pluginMessage(`{}`)); err != nil {
+	for _, c := range cases {
+		resp := &fakeResponder{}
+		if err := NewBrightness(&fakeManager{}, resp).OnSendToPlugin(context.Background(), pluginMessage(c.message)); err != nil {
 			t.Fatal(err)
 		}
+		if !reflect.DeepEqual(resp.sent[0]["schema"], c.want) {
+			t.Errorf("%s: sent the wrong schema", c.message)
+		}
 	}
-	if len(resp.sent) != 0 {
-		t.Fatalf("sent %d messages, want 0", len(resp.sent))
+}
+
+// Every action UUID lives in both manifest.json and All, and only dial-capable actions may declare the Encoder.
+func TestActionsMatchManifest(t *testing.T) {
+	raw, err := os.ReadFile("../../assets/manifest.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var manifest struct {
+		Actions []struct {
+			UUID        string
+			Controllers []string
+		}
+	}
+	if err := json.Unmarshal(raw, &manifest); err != nil {
+		t.Fatal(err)
+	}
+	handlers := All(&fakeManager{}, &fakeResponder{})
+	if len(manifest.Actions) != len(handlers) {
+		t.Errorf("manifest declares %d actions, All registers %d", len(manifest.Actions), len(handlers))
+	}
+	for _, a := range manifest.Actions {
+		h, ok := handlers[a.UUID]
+		if !ok {
+			t.Errorf("%s is in the manifest but has no handler", a.UUID)
+			continue
+		}
+		_, handlesDial := h.(streamdeck.DialHandler)
+		if declaresDial := slices.Contains(a.Controllers, streamdeck.ControllerEncoder); declaresDial != handlesDial {
+			t.Errorf("%s: manifest Encoder=%v, handler implements DialHandler=%v", a.UUID, declaresDial, handlesDial)
+		}
 	}
 }
